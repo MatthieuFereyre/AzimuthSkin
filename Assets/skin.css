@@ -1,0 +1,1662 @@
+/* ============================================================================
+   Azimuth skin for Kanboard 1.2.x — light palette + the whole design.
+
+   Kanboard drives its two themes entirely from custom properties declared on
+   `:root`, so most of the work here is redeclaring those properties in terms of
+   the design tokens of azimuth.web (`--azimuth-*`). Everything downstream — tables,
+   dropdowns, alerts, inputs — follows without being named.
+
+   What custom properties cannot reach is the handful of colours Kanboard writes
+   literally in its sheet (`color:#000` on card titles, `opacity:.5` on card
+   icons) and the sixteen task colours it prints in an inline `<style>` in the
+   head. Those are overridden by name, in the last two sections.
+
+   The dark palette lives in `theme-dark.css` and redefines the tokens only.
+   ========================================================================== */
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('fonts/Inter-Variable.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Spectral';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/spectral-700-normal-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Newsreader';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/newsreader-400-normal-latin.woff2') format('woff2');
+}
+
+/* ── Tokens ──────────────────────────────────────────────────────────────
+   The light palette, and the default: if the head hook ever stops firing, this
+   is what a dark-theme user gets — a coherent light interface rather than a
+   broken one. */
+:root {
+    --azimuth-bg: #F5FAFC;
+    --azimuth-surface: #FFFFFF;
+    --azimuth-surface-hi: #EAF4F8;
+    --azimuth-text: #181C1D;
+    --azimuth-text-2: #42494B;
+    /* azimuth.web reads #676F71 here. It clears AA on the page background but not
+       on the tinted cards, where the age and estimate badges sit: 4.2:1. Two
+       notches darker covers the darkest of the sixteen fills. */
+    --azimuth-mute: #5A6164;
+    --azimuth-divider: rgba(0, 0, 0, 0.08);
+    --azimuth-divider-strong: rgba(37, 110, 151, 0.38);
+    --azimuth-cyan: #256E97;
+    --azimuth-cyan-contrast: #FFFFFF;
+    --azimuth-cyan-ink: #256E97;
+    /* Headings inside a written body — descriptions and comments. The top two
+       levels take the accent; the ones below take the same hue with its chroma
+       taken out, so the hierarchy shows even where the type sizes are close. */
+    --azimuth-heading: var(--azimuth-cyan-ink);
+    --azimuth-heading-2: #3C5767;
+    /* Inline code and its blocks. Deliberately outside the accent family: a path
+       in the middle of a sentence is not a link, and it should not read as one. */
+    --azimuth-code: #8C3F2E;
+    /* The ground of the blocks that step out of the prose — callouts, code
+       blocks, table headers. Barely 1.1:1 against the page on purpose: what marks
+       the boundary is the accent rule beside it, not the fill. */
+    --azimuth-tint: #E8F1F7;
+    /* Scrollbars. Around 3:1 against the surfaces they sit on: quiet enough to
+       disappear while reading, still findable when looked for. */
+    --azimuth-scroll: #849095;
+    --azimuth-scroll-hover: #6C797E;
+    /* The hairline around a task touched in the last 48 hours. Deliberately
+       neutral: the colour of a card already means its type, and a second
+       coloured signal on the same edge read as an alert. */
+    --azimuth-ring-recent: rgba(24, 28, 29, 0.30);
+    --azimuth-shadow: rgba(16, 42, 56, 0.10);
+    --azimuth-shadow-lg: rgba(16, 42, 56, 0.16);
+    --azimuth-danger: #A32718;
+    --azimuth-danger-contrast: #FFFFFF;
+    --azimuth-danger-ink: #A32718;
+    --azimuth-success: #2C6B33;
+    --azimuth-success-ink: #2C6B33;
+
+    --azimuth-font-display: 'Spectral', Georgia, 'Times New Roman', serif;
+    --azimuth-font-body: 'Newsreader', Georgia, serif;
+    --azimuth-font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --radius-card: 16px;
+    --radius-panel: 20px;
+    --radius-shot: 12px;
+    --radius-pill: 100px;
+
+    /* Task colours: fill = card background, edge = the identifying bar,
+       chip/ink = the tag pill. Contrast of every pair is checked in
+       `contrast.mjs`; do not hand-edit one without rerunning it. */
+    --kb-red-fill: #fbd7d9;
+    --kb-red-edge: #a42830;
+    --kb-red-chip: #f6c3c7;
+    --kb-red-ink: #6d1a20;
+
+    --kb-cyan-fill: #d0f4fd;
+    --kb-cyan-edge: #1f8ca7;
+    --kb-cyan-chip: #c0eef9;
+    --kb-cyan-ink: #155f72;
+
+    --kb-orange-fill: #fdefd8;
+    --kb-orange-edge: #ac7920;
+    --kb-orange-chip: #f9e4c0;
+    --kb-orange-ink: #725015;
+
+    --kb-light-green-fill: #e4f9dd;
+    --kb-light-green-edge: #49942e;
+    --kb-light-green-chip: #d2f2c7;
+    --kb-light-green-ink: #336720;
+
+    --kb-grey-fill: #e9eaec;
+    --kb-grey-edge: #61666b;
+    --kb-grey-chip: #dbdddf;
+    --kb-grey-ink: #404447;
+
+    --kb-yellow-fill: #f9fbdd;
+    --kb-yellow-edge: #878e25;
+    --kb-yellow-chip: #f2f5c4;
+    --kb-yellow-ink: #666b1c;
+
+    --kb-blue-fill: #d8e6fc;
+    --kb-blue-edge: #2459a8;
+    --kb-blue-chip: #c2d7f7;
+    --kb-blue-ink: #183b6f;
+
+    --kb-green-fill: #d3fbe1;
+    --kb-green-edge: #22954c;
+    --kb-green-chip: #c2f7d6;
+    --kb-green-ink: #196e38;
+
+    --kb-purple-fill: #ecd5fa;
+    --kb-purple-edge: #762aa2;
+    --kb-purple-chip: #e3c4f5;
+    --kb-purple-ink: #4e1c6b;
+
+    --kb-brown-fill: #ece3de;
+    --kb-brown-edge: #7b6251;
+    --kb-brown-chip: #e5dbd4;
+    --kb-brown-ink: #524135;
+
+    --kb-deep-orange-fill: #fcdecf;
+    --kb-deep-orange-edge: #aa4f22;
+    --kb-deep-orange-chip: #f8d3c1;
+    --kb-deep-orange-ink: #713517;
+
+    --kb-dark-grey-fill: #dde7ee;
+    --kb-dark-grey-edge: #4d6a7f;
+    --kb-dark-grey-chip: #d2dee7;
+    --kb-dark-grey-ink: #334654;
+
+    --kb-pink-fill: #fcdaea;
+    --kb-pink-edge: #a82462;
+    --kb-pink-chip: #f7c2db;
+    --kb-pink-ink: #6f1841;
+
+    --kb-teal-fill: #dafcf7;
+    --kb-teal-edge: #209384;
+    --kb-teal-chip: #c2f7f0;
+    --kb-teal-ink: #186f64;
+
+    --kb-lime-fill: #ecf8d4;
+    --kb-lime-edge: #6d8e29;
+    --kb-lime-chip: #e4f4c6;
+    --kb-lime-ink: #50691e;
+
+    --kb-amber-fill: #fdf2cf;
+    --kb-amber-edge: #9c7e1b;
+    --kb-amber-chip: #faecbf;
+    --kb-amber-ink: #735d14;
+
+    /* ── Kanboard's own variables, restated ──
+       `--color-primary` is the one that mattered: at #a0a0a0 on a pastel card it
+       took the task tags down to about 1.8:1. It is body text now. */
+    --body-background-color: var(--azimuth-bg);
+    --header-background-color: var(--azimuth-bg);
+    --color-primary: var(--azimuth-text);
+    --color-light: var(--azimuth-mute);
+    --color-lighter: var(--azimuth-divider);
+    --color-dark: var(--azimuth-text);
+    --color-medium: var(--azimuth-text-2);
+    --color-error: var(--azimuth-danger-ink);
+
+    --link-color-primary: var(--azimuth-cyan-ink);
+    --link-color-focus: var(--azimuth-cyan-ink);
+    --link-color-hover: var(--azimuth-cyan-ink);
+
+    --alert-color-default: var(--azimuth-text);
+    --alert-background-color-default: var(--azimuth-surface-hi);
+    --alert-border-color-default: var(--azimuth-divider-strong);
+    --alert-color-success: var(--azimuth-success-ink);
+    --alert-background-color-success: #E4F3E6;
+    --alert-border-color-success: #A8CDAC;
+    --alert-color-error: var(--azimuth-danger-ink);
+    --alert-background-color-error: #FBE7E4;
+    --alert-border-color-error: #E1A99F;
+    --alert-color-info: var(--azimuth-cyan-ink);
+    --alert-background-color-info: var(--azimuth-surface-hi);
+    --alert-border-color-info: var(--azimuth-divider-strong);
+    --alert-color-normal: var(--azimuth-text);
+    --alert-background-color-normal: var(--azimuth-surface-hi);
+    --alert-border-color-normal: var(--azimuth-divider);
+
+    --button-default-color: var(--azimuth-cyan-ink);
+    --button-default-background-color: transparent;
+    --button-default-border-color: var(--azimuth-divider-strong);
+    --button-default-color-focus: var(--azimuth-cyan-ink);
+    --button-default-background-color-focus: var(--azimuth-surface-hi);
+    --button-default-border-color-focus: var(--azimuth-cyan-ink);
+    --button-primary-color: var(--azimuth-cyan-contrast);
+    --button-primary-background-color: var(--azimuth-cyan);
+    --button-primary-border-color: var(--azimuth-cyan-ink);
+    --button-primary-color-focus: var(--azimuth-cyan-contrast);
+    --button-primary-background-color-focus: var(--azimuth-cyan);
+    --button-primary-border-color-focus: var(--azimuth-cyan-ink);
+    --button-danger-color: var(--azimuth-danger-contrast);
+    --button-danger-background-color: var(--azimuth-danger);
+    --button-danger-border-color: var(--azimuth-danger);
+    --button-danger-color-focus: var(--azimuth-danger-contrast);
+    --button-danger-background-color-focus: var(--azimuth-danger);
+    --button-danger-border-color-focus: var(--azimuth-danger);
+    --button-disabled-color: var(--azimuth-mute);
+    --button-disabled-background-color: var(--azimuth-surface-hi);
+    --button-disabled-border-color: var(--azimuth-divider);
+
+    --table-header-background-color: var(--azimuth-surface-hi);
+    --table-nth-background-color: var(--azimuth-surface);
+    --table-border-color: var(--azimuth-divider);
+    --table-list-header-border-color: var(--azimuth-divider);
+    --table-list-header-background-color: var(--azimuth-surface-hi);
+    --table-list-nth-background-color: var(--azimuth-surface);
+    --table-list-border-color: var(--azimuth-divider);
+    --table-list-row-hover-border-color: var(--azimuth-divider-strong);
+    --table-list-row-background-color: var(--azimuth-surface-hi);
+
+    --avatar-color-letter: #FFFFFF;
+    --activity-title-color: var(--azimuth-text);
+    --activity-title-border-color: var(--azimuth-divider);
+    --activity-event-background-color: var(--azimuth-surface);
+    --activity-event-hover-color: var(--azimuth-surface-hi);
+    --user-mention-color: var(--azimuth-cyan-ink);
+    --board-task-limit-color: var(--azimuth-danger-ink);
+
+    --sidebar-border-color: var(--azimuth-divider);
+    --dropdown-background-color: var(--azimuth-surface);
+    --dropdown-border-color: var(--azimuth-divider);
+    --dropdown-li-border-color: var(--azimuth-divider);
+
+    --input-addon-background-color: var(--azimuth-surface-hi);
+    --input-addon-color: var(--azimuth-text-2);
+    --input-background-color: var(--azimuth-surface);
+    --input-border-color: var(--azimuth-divider-strong);
+    --input-placeholder-color: var(--azimuth-mute);
+    --input-focus-color: var(--azimuth-text);
+    --input-focus-border-color: var(--azimuth-cyan-ink);
+    --input-focus-shadow-color: transparent;
+
+    --views-background-color: var(--azimuth-surface);
+    --views-border-color: var(--azimuth-divider-strong);
+    --views-active-color: var(--azimuth-cyan-contrast);
+
+    --tooltip-background-color: var(--azimuth-surface);
+    --tooltip-border-color: var(--azimuth-divider-strong);
+    --tooltip-shadow-color: var(--azimuth-shadow-lg);
+    --panel-background-color: var(--azimuth-surface);
+    --panel-border-color: var(--azimuth-divider);
+
+    --draggable-item-selected-background-color: var(--azimuth-surface-hi);
+    --draggable-item-selected-border-color: var(--azimuth-cyan-ink);
+    --draggable-item-hover-background-color: var(--azimuth-surface-hi);
+    --draggable-row-handle-color: var(--azimuth-mute);
+    --draggable-placeholder-background-color: var(--azimuth-surface-hi);
+    --draggable-placeholder-border-color: var(--azimuth-cyan-ink);
+
+    --task-list-icons-color: var(--azimuth-mute);
+    --form-help-color: var(--azimuth-text-2);
+    --form-error-color: var(--azimuth-danger-ink);
+    --comment-title-border-color: var(--azimuth-divider);
+    --comment-nth-background-color: var(--azimuth-surface);
+    --comment-highlighted-background-color: var(--azimuth-surface-hi);
+    --comment-highlighted-hover-background-color: var(--azimuth-surface-hi);
+    --comment-highlighted-border-color: var(--azimuth-cyan-ink);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────── */
+body {
+    font-family: var(--azimuth-font-ui);
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--azimuth-text);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--azimuth-font-display);
+    font-weight: 700;
+    color: var(--azimuth-text);
+    letter-spacing: -0.01em;
+}
+
+.page {
+    margin-left: 18px;
+    margin-right: 18px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Two rules and not one list: `:focus-visible` is younger than the browsers this
+   has to survive, and an unknown selector invalidates the whole list it sits in. */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+summary:focus {
+    outline: 2px solid var(--azimuth-cyan-ink);
+    outline-offset: 2px;
+}
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+summary:focus:not(:focus-visible) {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+    outline: 2px solid var(--azimuth-cyan-ink);
+    outline-offset: 2px;
+}
+
+/* ── Scrollbars ──────────────────────────────────────────────────────────
+   Two mechanisms on purpose, and they are not redundant: `scrollbar-width` and
+   `scrollbar-color` are the standard properties, inherited from :root, and are
+   all Firefox understands; the `::-webkit-` block is what older Chrome and
+   Safari answer to. Where both are supported the standard ones win, which is
+   why the two must describe the same thing.
+
+   The thumb is inset by a transparent border rather than made narrower: it keeps
+   a comfortable hit area while looking like a hairline. */
+:root {
+    scrollbar-width: thin;
+    scrollbar-color: var(--azimuth-scroll) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: var(--radius-pill);
+    background-color: var(--azimuth-scroll);
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--azimuth-scroll-hover);
+    background-clip: padding-box;
+}
+
+/* ── Application header ──────────────────────────────────────────────── */
+header {
+    align-items: center;
+    padding: 10px 18px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--azimuth-divider);
+}
+
+header h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3em;
+}
+
+.logo a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-shot);
+    background: var(--azimuth-surface-hi);
+    color: var(--azimuth-text);
+    opacity: 1;
+    font-family: var(--azimuth-font-display);
+    font-size: 0.82em;
+    font-weight: 700;
+}
+
+.logo a:hover,
+.logo a:focus {
+    color: var(--azimuth-text);
+    text-decoration: none;
+}
+
+.logo span,
+.logo a:hover span,
+.logo a:focus span {
+    color: var(--azimuth-cyan-ink);
+}
+
+header .title a {
+    color: var(--azimuth-text);
+}
+
+/* ── Project header: menu, view switcher, filter ─────────────────────── */
+.project-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.project-header .dropdown-component,
+.project-header .views-switcher-component {
+    float: none;
+    margin: 0;
+}
+
+.project-header .filter-box-component {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.views {
+    display: inline-flex;
+    margin: 0 4px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--azimuth-divider-strong);
+    border-radius: var(--radius-pill);
+}
+
+.views li {
+    display: flex;
+    padding: 0;
+    border: none;
+    background: var(--azimuth-surface);
+}
+
+.views li a {
+    padding: 6px 16px;
+    color: var(--azimuth-text-2);
+}
+
+.views li a:hover {
+    background: var(--azimuth-surface-hi);
+    color: var(--azimuth-text);
+    text-decoration: none;
+}
+
+/* The rim is not decoration: the neighbouring segment turns `--azimuth-surface-hi` on
+   hover, and the accent alone sits at 2.7:1 against it — under the 3:1 a UI
+   component's boundary owes. The rim carries the boundary instead. */
+.views li.active {
+    background: var(--azimuth-cyan);
+    box-shadow: inset 0 0 0 1px var(--azimuth-cyan-ink);
+}
+
+.views li.active a {
+    color: var(--azimuth-cyan-contrast);
+    font-weight: 600;
+}
+
+/* An icon inside a link does not inherit the link's colour — Kanboard pins it with
+   `a .fa`. On the accent fill it stayed body-coloured while its label went white. */
+.views li.active a .fa {
+    color: var(--azimuth-cyan-contrast);
+}
+
+/* ── Project selector ────────────────────────────────────────────────────
+   The frame belongs to the container, not to the field: the component draws its
+   own chevron next to the input, and a border on the input itself would double
+   the outline. Kanboard strips it — and the skin's own input rule, printed later,
+   would have put it back. */
+.select-dropdown-input-container {
+    display: flex;
+    align-items: center;
+    max-width: 320px;
+    border: 1px solid var(--azimuth-divider-strong);
+    border-radius: var(--radius-pill);
+    background-color: var(--azimuth-surface);
+}
+
+/* `[type="text"]` is not redundant: without it this selector ties with the skin's
+   own field rule, and the winner would be whichever is printed last — the field
+   rule would hand the input back its border and draw a second outline inside the
+   container's. */
+.select-dropdown-input-container input[type="text"].select-dropdown-input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: 36px;
+    margin: 0;
+    padding: 0 34px 0 16px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--azimuth-text);
+}
+
+/* The focus ring belongs to the container too. Left on the input, it was drawn
+   inside the frame, around a field that has no border of its own. */
+.select-dropdown-input-container input[type="text"].select-dropdown-input:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
+.select-dropdown-input-container input[type="text"].select-dropdown-input:focus-visible {
+    outline: none;
+}
+
+.select-dropdown-input-container:focus-within {
+    border-color: var(--azimuth-cyan-ink);
+    box-shadow: 0 0 0 2px var(--azimuth-cyan-ink);
+}
+
+.select-dropdown-input-container .select-dropdown-chevron,
+.select-dropdown-input-container .select-loading-icon {
+    top: 50%;
+    right: 14px;
+    color: var(--azimuth-text-2);
+    transform: translateY(-50%);
+}
+
+#select-dropdown-menu {
+    padding: 6px;
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 28px var(--azimuth-shadow-lg);
+    overflow-y: auto;
+}
+
+.select-dropdown-menu-item {
+    padding: 7px 12px;
+    border: none;
+    border-radius: var(--radius-shot);
+    color: var(--azimuth-text);
+}
+
+.input-addon-field,
+.input-addon-item {
+    border-color: var(--azimuth-divider-strong);
+    padding: 6px 12px;
+}
+
+.input-addon-field:first-child {
+    border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+    padding-left: 16px;
+}
+
+.input-addon-item:last-child {
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+    padding-right: 14px;
+}
+
+.input-addon-field {
+    color: var(--azimuth-text);
+}
+
+/* ── Board ───────────────────────────────────────────────────────────────
+   Columns are separated by a gutter rather than by a border: the header cell and
+   the task cell below it then read as one panel, and no line is drawn twice at
+   the junctions. */
+#board {
+    border-collapse: separate;
+    border-spacing: 12px 0;
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+/* The two exclusions are not decoration: Kanboard sizes a collapsed or compact
+   column with a rule of the same specificity, printed earlier, so a bare
+   `#board th.board-column-header` would silently win over both. */
+#board th.board-column-header:not(.board-column-header-collapsed):not(.board-column-compact) {
+    width: 268px;
+}
+
+#board th.board-column-header {
+    padding: 12px 14px 10px;
+    border: none;
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    background: var(--azimuth-surface);
+}
+
+#board td[class*="board-column-"]:not(.board-column-task-collapsed) {
+    padding: 0 10px 12px;
+    border: none;
+    border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+    background: var(--azimuth-surface);
+    vertical-align: top;
+}
+
+.board-column-title .dropdown-menu,
+.board-column-title {
+    font-family: var(--azimuth-font-ui);
+    font-size: 0.92em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--azimuth-text);
+}
+
+.board-column-header-task-count {
+    color: var(--azimuth-mute);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+}
+
+.board-task-list {
+    min-height: 40px;
+}
+
+/* ── Board cards ─────────────────────────────────────────────────────────
+   The type colour stays, but it is no longer what the text sits on: the fill is
+   a deep tint in dark and the familiar pastel in light, and the saturated hue
+   moves to a bar on the leading edge, where it stays visible at a glance without
+   dragging the contrast of everything printed on top. */
+.task-board {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border-radius: var(--radius-card);
+    font-size: 0.92em;
+    box-shadow: 0 1px 2px var(--azimuth-shadow);
+}
+
+.task-board[class*="color-"] {
+    border: 1px solid var(--azimuth-divider);
+    border-left: 4px solid var(--edge, var(--azimuth-divider-strong));
+    background-color: var(--fill, var(--azimuth-surface));
+}
+
+div.task-board-recent {
+    border-width: 1px;
+    border-left-width: 4px;
+    box-shadow: 0 0 0 1px var(--azimuth-ring-recent);
+}
+
+/* A closed card is set apart by its outline, not by being faded out: dimming the
+   whole card took its footer under 4.5:1, which is the defect this skin exists to
+   fix. */
+div.task-board-status-closed {
+    border-style: dashed;
+    border-left-style: solid;
+    box-shadow: none;
+}
+
+.task-board-status-closed .task-board-title {
+    color: var(--azimuth-text-2);
+}
+
+.task-board-closed {
+    color: var(--azimuth-mute);
+}
+
+.task-board a,
+.task-board-title a {
+    color: var(--azimuth-text);
+}
+
+/* In rem, not em: the card already shrinks its own text, and the title is what
+   the board is read for. */
+.task-board-title {
+    margin-top: 2px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--azimuth-text);
+}
+
+.task-board-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86em;
+    color: var(--azimuth-text-2);
+}
+
+.task-board-header .dropdown-menu-link-icon strong,
+.task-board-header .dropdown-menu strong {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--azimuth-text-2);
+}
+
+.task-board-avatars {
+    margin-left: auto;
+    float: none;
+}
+
+.task-board-assignee {
+    color: var(--azimuth-text-2);
+}
+
+/* Kanboard prints these at half opacity, which is exactly the amount of contrast
+   the footer could not afford. Full opacity, muted colour, one AA-safe value. */
+.task-board-icons a,
+.task-board-icons span {
+    opacity: 1;
+    color: var(--azimuth-mute);
+}
+
+.task-board-icons a:hover,
+.task-board-icons span.tooltip:hover {
+    opacity: 1;
+    font-weight: inherit;
+    color: var(--azimuth-text);
+}
+
+.task-board-icons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    margin-top: 8px;
+    font-size: 0.82em;
+    color: var(--azimuth-mute);
+}
+
+.task-board-icons .task-board-icons-row {
+    line-height: 20px;
+}
+
+.task-board .task-priority,
+.task-board .task-time-estimated,
+.task-board .task-score {
+    padding: 1px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--chip, var(--azimuth-surface-hi));
+    color: var(--ink, var(--azimuth-text-2));
+    font-variant-numeric: tabular-nums;
+}
+
+.task-board .task-date {
+    color: var(--azimuth-mute);
+    font-weight: 400;
+}
+
+span.task-date-today {
+    color: var(--azimuth-cyan-ink);
+    font-weight: 600;
+}
+
+span.task-date-overdue {
+    color: var(--azimuth-danger-ink);
+    font-weight: 600;
+}
+
+.task-board span.task-icon-age-total,
+.task-board span.task-icon-age-column {
+    border-color: var(--azimuth-divider-strong);
+    color: var(--azimuth-mute);
+}
+
+/* Task age and days-in-column: two halves of one pill rather than two boxes
+   overlapped by a negative margin. */
+span.task-icon-age-total {
+    padding: 1px 6px 1px 9px;
+    border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+}
+
+span.task-icon-age-column {
+    margin-left: -1px;
+    padding: 1px 9px 1px 6px;
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+}
+
+.task-board-icons .flag-milestone,
+.task-list-icons .flag-milestone {
+    color: var(--azimuth-success-ink);
+}
+
+/* ── Tags and categories ─────────────────────────────────────────────────
+   The pill that started this: grey on pastel, around 1.8:1. It now carries its
+   own fill and its own ink, both taken from the tag colour. */
+.task-tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.task-tags li {
+    margin: 0;
+    padding: 2px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--chip, var(--azimuth-surface-hi));
+    color: var(--ink, var(--azimuth-text));
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.task-board-category-container {
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
+.task-board-category,
+.table-list-category {
+    padding: 2px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--chip, var(--azimuth-surface-hi));
+    color: var(--ink, var(--azimuth-text));
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.task-board-category a,
+.table-list-category a {
+    color: inherit;
+}
+
+/* ── Task detail ─────────────────────────────────────────────────────── */
+#task-summary h2 {
+    margin-bottom: 12px;
+    font-size: 1.6em;
+}
+
+.task-summary-container {
+    padding: 18px 20px;
+    border-radius: var(--radius-panel);
+    box-shadow: 0 1px 2px var(--azimuth-shadow);
+}
+
+.task-summary-container[class*="color-"] {
+    border: 1px solid var(--azimuth-divider);
+    border-left: 4px solid var(--edge, var(--azimuth-divider-strong));
+    background-color: var(--fill, var(--azimuth-surface));
+}
+
+.task-summary-column strong {
+    color: var(--azimuth-text-2);
+    font-weight: 600;
+}
+
+.task-summary-column a,
+.task-summary-column a:hover {
+    color: var(--azimuth-cyan-ink);
+}
+
+/* ── The toolbar holds still, the content scrolls under it ───────────────
+   On every view that carries the project toolbar — board, list, overview,
+   settings — the application header and that toolbar stay in place, and only
+   what sits below them moves.
+
+   Two arrangements, and the difference is where the scrollbar starts.
+
+   Where a single element holds the content — the board, the list, a two-pane
+   view — the toolbar leaves the scroller and becomes a fixed rung of a flex
+   column. The scrollbar then starts *below* it.
+
+   Where the content is several blocks with nothing wrapping them — the project
+   overview — there is no element to scroll, so the toolbar is pinned inside the
+   scroller instead. Its scrollbar runs the full height, beside the toolbar.
+   That is the fallback, not the intent: CSS cannot wrap what the template did
+   not wrap.
+
+   `:has()` is what makes any of it possible without touching a template: nothing
+   on <body> says which page is open. Where `:has()` is missing, the whole block
+   is dropped and the page scrolls as before.
+
+   Above 768px only. Below it Kanboard stacks the menus *under* the content, and
+   freezing the shell would put half the page out of reach. */
+@media (min-width: 769px) {
+    body:has(.project-header) {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding-bottom: 0;
+        overflow: hidden;
+    }
+
+    body:has(.project-header) > header {
+        flex: 0 0 auto;
+    }
+
+    body:has(.project-header) > .page {
+        flex: 1 1 auto;
+        min-height: 0;
+        padding-bottom: 18px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    body:has(.project-header) .project-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        margin-bottom: 14px;
+        padding: 6px 0 10px;
+        background: var(--azimuth-bg);
+    }
+
+    /* ── The views that own their scroller ──
+       `.skin-scroll` is the one the stylesheet does not get for free: the
+       project overview renders several blocks with nothing around them, and
+       `skin.js` wraps them so this view can join the others. */
+    body:has(#board-container) > .page,
+    body:has(.page > .table-list) > .page,
+    body:has(.skin-scroll) > .page,
+    body:has(.sidebar-container) > .page {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 0;
+        overflow: hidden;
+    }
+
+    body:has(#board-container) #main,
+    body:has(.skin-scroll) #main,
+    body:has(.sidebar-container) #main {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    body:has(#board-container) .project-header,
+    body:has(.page > .table-list) .project-header,
+    body:has(.skin-scroll) .project-header,
+    body:has(.sidebar-container) .project-header {
+        position: static;
+        flex: 0 0 auto;
+        padding: 0;
+    }
+
+    /* `min-height: 0`: a flex item refuses to shrink below its content by
+       default, and without it the scrollbar comes back on the page. */
+    body:has(.project-header) #board-container,
+    body:has(.project-header) > .page > .table-list,
+    body:has(.project-header) .skin-scroll,
+    body:has(.project-header) .sidebar-container {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    /* The list is scoped to a direct child of the page on purpose: project
+       settings render a `.table-list` too, inside a pane that already scrolls,
+       and turning that one into a scroller would give it a second scrollbar. */
+    /* `scrollbar-gutter: stable` so the content does not jump sideways by the
+       width of the scrollbar the moment it becomes long enough to need one. */
+    body:has(.project-header) #board-container,
+    body:has(.project-header) > .page > .table-list,
+    body:has(.project-header) .skin-scroll {
+        overflow: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+    }
+
+    body:has(.project-header) .skin-scroll {
+        padding-right: 4px;
+        padding-bottom: 18px;
+    }
+
+    /* The paginator sits under the list rather than at the end of it. */
+    body:has(.project-header) > .page > .pagination {
+        flex: 0 0 auto;
+        padding-top: 10px;
+    }
+
+    /* Two panes: the shell holds completely still and each pane scrolls on its
+       own, so the action menu stays under the hand. */
+    body:has(.project-header) .sidebar,
+    body:has(.project-header) .sidebar-content {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    body:has(.project-header) .sidebar-content {
+        padding-right: 10px;
+        padding-bottom: 18px;
+        scrollbar-gutter: stable;
+    }
+}
+
+.accordion-title {
+    font-family: var(--azimuth-font-display);
+    font-size: 1.15em;
+    font-weight: 700;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--azimuth-divider);
+}
+
+.accordion-content {
+    margin-top: 14px;
+}
+
+/* ── Written bodies: descriptions, comments, tooltips ────────────────────
+   Kanboard styles this block in nine declarations, all of them spacing, so a
+   description came out as one even grey column: no scale between a title and a
+   paragraph, inline code no different from prose, and a `pre` painted #fbfbfb
+   with a #ddd border — invisible in the light theme, glaring in the dark one.
+
+   The scale is doing the work here, not the colour. The space *above* a heading
+   is larger than the space below it, which is what ties a title to its own
+   paragraph instead of leaving it floating between two blocks. */
+.markdown {
+    font-family: var(--azimuth-font-body);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--azimuth-text);
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+    font-family: var(--azimuth-font-display);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+.markdown h1 {
+    margin: 0 0 14px;
+    font-size: 1.55em;
+    color: var(--azimuth-heading);
+}
+
+.markdown h2 {
+    margin: 32px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--azimuth-divider);
+    font-size: 1.28em;
+    color: var(--azimuth-heading);
+}
+
+.markdown h3 {
+    margin: 26px 0 8px;
+    font-size: 1.1em;
+    color: var(--azimuth-heading-2);
+}
+
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+    margin: 20px 0 6px;
+    font-size: 1em;
+    color: var(--azimuth-heading-2);
+}
+
+/* A body opens on its title, never on a gap. */
+.markdown > :first-child {
+    margin-top: 0;
+}
+
+.markdown p {
+    margin: 0 0 12px;
+}
+
+.markdown ul,
+.markdown ol {
+    margin: 0 0 14px;
+    padding-left: 22px;
+}
+
+.markdown li {
+    margin-bottom: 5px;
+}
+
+/* The marker is the only part of a list the eye can use to count it, and it cost
+   nothing to make it legible: accent, and heavy enough for a number to read. */
+.markdown li::marker {
+    color: var(--azimuth-cyan-ink);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* A nested level steps back to the quieter tone rather than repeating the
+   accent, which is how the nesting shows without an extra indent. */
+.markdown li li::marker {
+    color: var(--azimuth-heading-2);
+}
+
+.markdown strong {
+    font-weight: 700;
+    color: var(--azimuth-text);
+}
+
+.markdown a {
+    color: var(--azimuth-cyan-ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* Inline code gets an ink of its own. A path or a symbol inside a sentence is
+   not prose, and the pill alone was not saying so. */
+.markdown code {
+    padding: 1px 6px;
+    border: 1px solid var(--azimuth-divider);
+    border-radius: 7px;
+    background: var(--azimuth-surface-hi);
+    color: var(--azimuth-code);
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.86em;
+}
+
+.markdown pre {
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-shot);
+    background: var(--azimuth-tint);
+    color: var(--azimuth-text);
+    line-height: 1.5;
+}
+
+.markdown pre code {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: 0.92em;
+}
+
+/* The callout: a panel, not a bare indent. Its boundary is the accent rule on
+   the leading edge — the fill is too close to the page to carry it alone. */
+.markdown blockquote {
+    margin: 0 0 16px;
+    padding: 12px 18px;
+    border: 1px solid var(--azimuth-divider);
+    border-left: 4px solid var(--azimuth-cyan-ink);
+    border-radius: 0 var(--radius-shot) var(--radius-shot) 0;
+    background: var(--azimuth-tint);
+    color: var(--azimuth-text);
+    font-style: italic;
+}
+
+.markdown blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+/* A rule that fades out rather than a grey line across the whole measure: it
+   separates without drawing a second border into the page. */
+.markdown hr {
+    height: 2px;
+    margin: 26px 0;
+    border: 0;
+    border-radius: 2px;
+    background-image: linear-gradient(90deg, var(--azimuth-cyan-ink), transparent 62%);
+}
+
+.markdown table {
+    margin-bottom: 16px;
+    font-size: 0.94em;
+}
+
+.markdown table th {
+    background: var(--azimuth-tint);
+    border-color: var(--azimuth-divider);
+    color: var(--azimuth-heading);
+    font-family: var(--azimuth-font-ui);
+    font-size: 0.9em;
+    letter-spacing: 0.02em;
+}
+
+.markdown table td {
+    border-color: var(--azimuth-divider);
+}
+
+.comment {
+    padding: 12px 14px;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--azimuth-divider);
+    background: var(--azimuth-surface);
+}
+
+.comment + .comment {
+    margin-top: 10px;
+}
+
+.comment-title {
+    color: var(--azimuth-text-2);
+}
+
+.comment-username {
+    color: var(--azimuth-text);
+}
+
+.comment-date,
+.comment-visibility {
+    color: var(--azimuth-mute);
+}
+
+/* ── List view ───────────────────────────────────────────────────────── */
+.table-list-header {
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    padding: 4px 12px;
+}
+
+.table-list-header a {
+    color: var(--azimuth-text);
+}
+
+.table-list-header a:hover,
+.table-list-header a:focus,
+.table-list-header .table-list-header-count {
+    color: var(--azimuth-text-2);
+}
+
+.table-list-row {
+    padding: 6px 12px;
+    background: var(--azimuth-surface);
+}
+
+.table-list-row:last-child {
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+}
+
+.table-list-row .table-list-title a {
+    color: var(--azimuth-text);
+}
+
+.table-list-row .table-list-details {
+    color: var(--azimuth-mute);
+    font-weight: 400;
+}
+
+.table-list-row .table-list-details strong {
+    color: var(--azimuth-text-2);
+    font-weight: 600;
+}
+
+.table-list-row[class*="color-"] {
+    border-left: 4px solid var(--edge, var(--azimuth-divider-strong));
+}
+
+.task-table a,
+.dashboard-table-link {
+    color: var(--azimuth-text);
+}
+
+table th {
+    font-weight: 600;
+    padding: 8px 10px;
+}
+
+table td {
+    padding: 8px 10px;
+}
+
+/* ── Forms and buttons ───────────────────────────────────────────────── */
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="text"]:not(.input-addon-field),
+textarea,
+select {
+    color: var(--azimuth-text);
+    background-color: var(--azimuth-surface);
+    border: 1px solid var(--azimuth-divider-strong);
+    border-radius: var(--radius-shot);
+    padding: 6px 10px;
+    font-family: var(--azimuth-font-ui);
+    font-size: 0.95em;
+}
+
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="text"]:not(.input-addon-field) {
+    height: 34px;
+}
+
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus,
+textarea:focus {
+    color: var(--azimuth-text);
+    border-color: var(--azimuth-cyan-ink);
+    box-shadow: none;
+}
+
+label {
+    color: var(--azimuth-text-2);
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.form-help {
+    color: var(--azimuth-text-2);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 0 20px;
+    border-radius: var(--radius-pill);
+    font-family: var(--azimuth-font-ui);
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+.btn:hover,
+.btn:focus {
+    text-decoration: none;
+}
+
+/* ── Dropdowns, modals, tooltips ─────────────────────────────────────── */
+ul.dropdown-submenu-open {
+    padding: 6px;
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 28px var(--azimuth-shadow-lg);
+}
+
+.dropdown-submenu-open li {
+    padding: 7px 12px;
+    border: none;
+    border-radius: var(--radius-shot);
+}
+
+.dropdown-submenu-open li:not(.no-hover):hover {
+    background: var(--azimuth-surface-hi);
+    color: var(--azimuth-text);
+}
+
+.dropdown-submenu-open li:hover a,
+.dropdown-submenu-open li:hover i {
+    color: var(--azimuth-text);
+}
+
+.dropdown-submenu-open a {
+    color: var(--azimuth-text);
+}
+
+.dropdown-menu-link-text,
+.dropdown-menu-link-icon {
+    color: var(--azimuth-text-2);
+}
+
+#modal-box {
+    border-radius: var(--radius-panel);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+#modal-content {
+    padding: 0 22px 22px;
+}
+
+.tooltip-content,
+#tooltip-container {
+    border-radius: var(--radius-card);
+}
+
+.alert {
+    padding: 10px 16px;
+    border-radius: var(--radius-card);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
+.sidebar > ul a {
+    color: var(--azimuth-text-2);
+    font-weight: 400;
+}
+
+.sidebar > ul a:hover {
+    color: var(--azimuth-text);
+}
+
+.sidebar > ul li {
+    line-height: 32px;
+    border-bottom: 1px solid var(--azimuth-divider);
+    border-left: 3px solid transparent;
+    padding-left: 12px;
+}
+
+.sidebar > ul li:hover,
+.sidebar > ul li.active {
+    border-left: 3px solid var(--azimuth-cyan-ink);
+    padding-left: 12px;
+    background: var(--azimuth-surface-hi);
+}
+
+/* ── Avatars ─────────────────────────────────────────────────────────────
+   The background colour is hashed from the user name and printed inline, so it
+   cannot be replaced — and at the top of its lightness range it left white
+   initials under 4.5:1. A fixed scrim paints over the inline colour, whatever
+   it turns out to be, and keeps the hue recognisable. */
+.avatar-letter {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.42));
+    border-radius: var(--radius-pill);
+    color: #FFFFFF;
+    font-family: var(--azimuth-font-ui);
+    font-weight: 600;
+}
+
+.avatar img {
+    border-radius: var(--radius-pill);
+}
+
+/* ── Colours Kanboard writes literally ───────────────────────────────────
+   Everything above rides on custom properties. These do not: they are hexes
+   printed in the theme sheet, and all of them assume a light background. On the
+   dark theme they were black on black, or a #ccc line drawn at full strength. */
+.page-header h2 {
+    border-bottom: 1px solid var(--azimuth-divider);
+}
+
+.form-required {
+    color: var(--azimuth-danger-ink);
+}
+
+.icon-success {
+    color: var(--azimuth-success-ink);
+}
+
+.icon-error,
+#file-list li .file-error {
+    color: var(--azimuth-danger-ink);
+}
+
+.task-board-saving-icon {
+    color: var(--azimuth-text);
+}
+
+.menu-inline li .active a,
+a.board-swimlane-toggle:hover,
+a.board-swimlane-toggle:focus,
+a i.web-notification-icon:focus,
+a i.web-notification-icon:hover {
+    color: var(--azimuth-text);
+}
+
+.task-list-avatars .task-avatar-assignee {
+    color: var(--azimuth-mute);
+}
+
+.task-list-avatars:hover .task-avatar-assignee {
+    color: var(--azimuth-text);
+}
+
+td a.dropdown-menu i,
+td a.dropdown-menu:hover strong,
+td a.dropdown-menu:hover strong i,
+td a.dropdown-menu:hover i {
+    color: var(--azimuth-text-2);
+}
+
+#suggest-menu {
+    background: var(--azimuth-surface);
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 28px var(--azimuth-shadow-lg);
+}
+
+.suggest-menu-item.active,
+.select-dropdown-menu-item.active {
+    background: var(--azimuth-cyan);
+    color: var(--azimuth-cyan-contrast);
+}
+
+.suggest-menu-item.active small {
+    color: var(--azimuth-cyan-contrast);
+}
+
+/* ── Task colours ────────────────────────────────────────────────────────
+   Kanboard prints `.task-board.color-red { background-color: … }` in an inline
+   <style> in the head, so a plain `.task-board` rule would lose on specificity.
+   Each colour class only sets four local values here; the rules above read them
+   through `--fill`, `--edge`, `--chip` and `--ink`. */
+.color-red {
+    --fill: var(--kb-red-fill);
+    --edge: var(--kb-red-edge);
+    --chip: var(--kb-red-chip);
+    --ink: var(--kb-red-ink);
+}
+
+.color-cyan {
+    --fill: var(--kb-cyan-fill);
+    --edge: var(--kb-cyan-edge);
+    --chip: var(--kb-cyan-chip);
+    --ink: var(--kb-cyan-ink);
+}
+
+.color-orange {
+    --fill: var(--kb-orange-fill);
+    --edge: var(--kb-orange-edge);
+    --chip: var(--kb-orange-chip);
+    --ink: var(--kb-orange-ink);
+}
+
+.color-light_green {
+    --fill: var(--kb-light-green-fill);
+    --edge: var(--kb-light-green-edge);
+    --chip: var(--kb-light-green-chip);
+    --ink: var(--kb-light-green-ink);
+}
+
+.color-grey {
+    --fill: var(--kb-grey-fill);
+    --edge: var(--kb-grey-edge);
+    --chip: var(--kb-grey-chip);
+    --ink: var(--kb-grey-ink);
+}
+
+.color-yellow {
+    --fill: var(--kb-yellow-fill);
+    --edge: var(--kb-yellow-edge);
+    --chip: var(--kb-yellow-chip);
+    --ink: var(--kb-yellow-ink);
+}
+
+.color-blue {
+    --fill: var(--kb-blue-fill);
+    --edge: var(--kb-blue-edge);
+    --chip: var(--kb-blue-chip);
+    --ink: var(--kb-blue-ink);
+}
+
+.color-green {
+    --fill: var(--kb-green-fill);
+    --edge: var(--kb-green-edge);
+    --chip: var(--kb-green-chip);
+    --ink: var(--kb-green-ink);
+}
+
+.color-purple {
+    --fill: var(--kb-purple-fill);
+    --edge: var(--kb-purple-edge);
+    --chip: var(--kb-purple-chip);
+    --ink: var(--kb-purple-ink);
+}
+
+.color-brown {
+    --fill: var(--kb-brown-fill);
+    --edge: var(--kb-brown-edge);
+    --chip: var(--kb-brown-chip);
+    --ink: var(--kb-brown-ink);
+}
+
+.color-deep_orange {
+    --fill: var(--kb-deep-orange-fill);
+    --edge: var(--kb-deep-orange-edge);
+    --chip: var(--kb-deep-orange-chip);
+    --ink: var(--kb-deep-orange-ink);
+}
+
+.color-dark_grey {
+    --fill: var(--kb-dark-grey-fill);
+    --edge: var(--kb-dark-grey-edge);
+    --chip: var(--kb-dark-grey-chip);
+    --ink: var(--kb-dark-grey-ink);
+}
+
+.color-pink {
+    --fill: var(--kb-pink-fill);
+    --edge: var(--kb-pink-edge);
+    --chip: var(--kb-pink-chip);
+    --ink: var(--kb-pink-ink);
+}
+
+.color-teal {
+    --fill: var(--kb-teal-fill);
+    --edge: var(--kb-teal-edge);
+    --chip: var(--kb-teal-chip);
+    --ink: var(--kb-teal-ink);
+}
+
+.color-lime {
+    --fill: var(--kb-lime-fill);
+    --edge: var(--kb-lime-edge);
+    --chip: var(--kb-lime-chip);
+    --ink: var(--kb-lime-ink);
+}
+
+.color-amber {
+    --fill: var(--kb-amber-fill);
+    --edge: var(--kb-amber-edge);
+    --chip: var(--kb-amber-chip);
+    --ink: var(--kb-amber-ink);
+}
+
+.task-tag[class*="color-"],
+.task-board-category[class*="color-"],
+.table-list-category[class*="color-"] {
+    background-color: var(--chip);
+    border-color: transparent;
+    color: var(--ink);
+}
+
+td[class*="color-"] {
+    background-color: var(--fill);
+}
+
+.color-picker-square[class*="color-"] {
+    background-color: var(--fill);
+    border-color: var(--edge);
+}
+
+/* ── Narrow screens ──────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .page {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    header {
+        padding: 8px 10px;
+    }
+
+    #board {
+        border-spacing: 8px 0;
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+
+    #board th.board-column-header {
+        width: 240px;
+        padding: 10px 12px 8px;
+    }
+
+    .views {
+        display: flex;
+        width: 100%;
+    }
+
+    .views li {
+        flex: 1;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,44 @@
+# Builds the archive Kanboard's plugin installer expects and attaches it to the
+# release. GitHub's own source zip cannot be used: the installer extracts the
+# archive straight into `plugins/`, and takes its first entry as the folder to
+# replace on update. A zip whose root is `AzimuthSkin-1.0.0/` would therefore
+# install the plugin under that name and break on the next update.
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the version in Plugin.php matches the tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          declared=$(grep -oP "(?<=return ')[0-9]+\.[0-9]+\.[0-9]+(?=';)" Plugin.php | head -1)
+          echo "tag=$tag declared=$declared"
+          test "$tag" = "$declared"
+
+      - name: Check the contrast guard still passes
+        run: node contrast.mjs
+
+      - name: Build the archive
+        run: |
+          mkdir -p build/AzimuthSkin
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'build' \
+                --exclude 'screenshots' ./ build/AzimuthSkin/
+          cd build && zip -rq "../AzimuthSkin-${GITHUB_REF_NAME#v}.zip" AzimuthSkin
+          cd .. && unzip -l "AzimuthSkin-${GITHUB_REF_NAME#v}.zip" | head -5
+
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        with:
+          files: AzimuthSkin-*.zip
+          generate_release_notes: true

@@ -1,0 +1,133 @@
+/* ============================================================================
+   Azimuth skin — dark palette.
+
+   Loaded by `Template/layout/head.php` only when the user's profile asks for the
+   dark theme. Tokens only: everything that gives the interface its shape lives in
+   `skin.css` and is shared by both palettes.
+   ========================================================================== */
+:root {
+    --azimuth-bg: #121517;
+    --azimuth-surface: #1A1E20;
+    --azimuth-surface-hi: #222729;
+    --azimuth-text: #E5E7E8;
+    --azimuth-text-2: #B5BCBE;
+    /* azimuth.web reads #868E90; raised so the card footers clear AA on the
+       darkest of the sixteen fills as well as on the plain surface. */
+    --azimuth-mute: #A0A7A9;
+    --azimuth-divider: rgba(255, 255, 255, 0.10);
+    --azimuth-divider-strong: rgba(255, 255, 255, 0.24);
+    /* The same accent as the light theme, as asked. It holds everywhere it is a
+       fill or a rule: white on it, 5.6:1; as a hairline on the page, 3.3:1. As
+       small text on a dark surface it falls to 3.3:1, under the AA minimum —
+       hence a lighter tint of the same tone, reserved for text. */
+    --azimuth-cyan: #256E97;
+    --azimuth-cyan-contrast: #FFFFFF;
+    --azimuth-cyan-ink: #63ACD9;
+    --azimuth-heading: var(--azimuth-cyan-ink);
+    --azimuth-heading-2: #8DA8B9;
+    --azimuth-code: #E0A98A;
+    --azimuth-tint: #19262E;
+    --azimuth-scroll: #606A6D;
+    --azimuth-scroll-hover: #7E8A8D;
+    --azimuth-ring-recent: rgba(229, 231, 232, 0.32);
+    --azimuth-shadow: rgba(0, 0, 0, 0.40);
+    --azimuth-shadow-lg: rgba(0, 0, 0, 0.55);
+    --azimuth-danger: #A83828;
+    --azimuth-danger-contrast: #FFFFFF;
+    --azimuth-danger-ink: #EC9184;
+    --azimuth-success: #2F6F36;
+    --azimuth-success-ink: #8CCB93;
+
+    /* Alerts keep their meaning but sit on dark surfaces; the borders are what
+       tells them apart at a glance, the fills stay quiet. */
+    --alert-background-color-success: #1B2A1D;
+    --alert-border-color-success: #3E6B44;
+    --alert-background-color-error: #2C1815;
+    --alert-border-color-error: #7B3A30;
+
+    --kb-red-fill: #361416;
+    --kb-red-edge: #d6666e;
+    --kb-red-chip: #482528;
+    --kb-red-ink: #e8b0b4;
+
+    --kb-cyan-fill: #112d34;
+    --kb-cyan-edge: #5fc4dd;
+    --kb-cyan-chip: #23434b;
+    --kb-cyan-ink: #addfeb;
+
+    --kb-orange-fill: #3b2c13;
+    --kb-orange-edge: #ddaf5f;
+    --kb-orange-chip: #4b3c23;
+    --kb-orange-ink: #ebd4ad;
+
+    --kb-light-green-fill: #203718;
+    --kb-light-green-edge: #88ce6e;
+    --kb-light-green-chip: #304628;
+    --kb-light-green-ink: #c1e4b4;
+
+    --kb-grey-fill: #262728;
+    --kb-grey-edge: #9a9ea2;
+    --kb-grey-chip: #353738;
+    --kb-grey-ink: #caccce;
+
+    --kb-yellow-fill: #383b16;
+    --kb-yellow-edge: #cdd468;
+    --kb-yellow-chip: #464826;
+    --kb-yellow-ink: #e3e7b1;
+
+    --kb-blue-fill: #142339;
+    --kb-blue-edge: #6392d9;
+    --kb-blue-chip: #243349;
+    --kb-blue-ink: #afc6e9;
+
+    --kb-green-fill: #12341f;
+    --kb-green-edge: #65d88f;
+    --kb-green-chip: #254932;
+    --kb-green-ink: #afe9c4;
+
+    --kb-purple-fill: #281433;
+    --kb-purple-edge: #ad68d4;
+    --kb-purple-chip: #3b2648;
+    --kb-purple-ink: #d3b1e7;
+
+    --kb-brown-fill: #26201c;
+    --kb-brown-edge: #b19a8b;
+    --kb-brown-chip: #3d3631;
+    --kb-brown-ink: #d6cac2;
+
+    --kb-deep-orange-fill: #321c11;
+    --kb-deep-orange-edge: #db8a61;
+    --kb-deep-orange-chip: #4a3024;
+    --kb-deep-orange-ink: #eac2ae;
+
+    --kb-dark-grey-fill: #1b2228;
+    --kb-dark-grey-edge: #87a2b5;
+    --kb-dark-grey-chip: #30383e;
+    --kb-dark-grey-ink: #c1ced7;
+
+    --kb-pink-fill: #3b1426;
+    --kb-pink-edge: #d9639a;
+    --kb-pink-chip: #492436;
+    --kb-pink-ink: #e9afca;
+
+    --kb-teal-fill: #143b36;
+    --kb-teal-edge: #63d9ca;
+    --kb-teal-chip: #244944;
+    --kb-teal-ink: #afe9e2;
+
+    --kb-lime-fill: #273014;
+    --kb-lime-edge: #afd16c;
+    --kb-lime-chip: #3c4727;
+    --kb-lime-ink: #d4e5b3;
+
+    --kb-amber-fill: #342c10;
+    --kb-amber-edge: #dfc15e;
+    --kb-amber-chip: #4b4223;
+    --kb-amber-ink: #ecddac;
+}
+
+/* Kanboard's dark sheet keeps a few colours of its own for surfaces the skin
+   turns over: white on a dark modal, a lighter scrim on the letter avatars. */
+.avatar-letter {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.34));
+}
