@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.1
+
+- Compatibility with the **PluginManager** plugin. Its stylesheet is written for a light
+  interface and is attached to the same hook as this one, after it, so its palette won its
+  tokens on a straight tie: its sidebar sat at 2.2:1, its table headers at 1.3:1, and the text
+  in its panels at 1.06:1. Its tokens now follow the theme.
+- It also reassigned `--color-light`, one of Kanboard's own tokens, without using it anywhere —
+  a reassignment that reached the whole application. Put back.
+
 ## 1.0.0
 
 First release.

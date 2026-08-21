@@ -37,6 +37,7 @@
     --azimuth-danger-ink: #EC9184;
     --azimuth-success: #2F6F36;
     --azimuth-success-ink: #8CCB93;
+    --azimuth-warning-ink: #EDA262;
 
     /* Alerts keep their meaning but sit on dark surfaces; the borders are what
        tells them apart at a glance, the fills stay quiet. */

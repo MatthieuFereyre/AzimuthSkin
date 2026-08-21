@@ -126,6 +126,19 @@ one stylesheet and by nothing else, so plain CSS cannot branch on it. Hence the 
 read. If it ever stops firing, the light palette still applies and the interface stays legible
 rather than collapsing.
 
+## Other plugins
+
+A plugin can ship a stylesheet of its own, and Kanboard attaches them all to the same hook in
+alphabetical order — so a plugin whose name sorts after this one wins any token they both declare.
+
+**PluginManager** does exactly that: its palette is written for a light interface, and under the
+dark theme its sidebar sat at 2.2:1, its table headers at 1.3:1 and the text in its panels at
+1.06:1. It also reassigns `--color-light`, one of Kanboard's own tokens, without using it
+anywhere — a reassignment that reaches the whole application, not just its pages.
+
+The last section of `skin.css` maps its tokens onto the theme's, and puts `--color-light` back.
+Both are measured on a replica of its screens, along with everything else.
+
 ## Fonts
 
 Inter, Spectral and Newsreader are bundled and served by your own instance — **no request leaves
