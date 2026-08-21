@@ -1687,6 +1687,24 @@ td[class*="color-"] {
     --panel-background-pm: var(--azimuth-surface-hi);
     --table-header-dir-info-pm: var(--azimuth-tint);
     --table-header-plugin-pm: var(--azimuth-surface-hi);
+
+    /* Its delete button was a pale pink carrying a link: the label sat at 1.5:1
+       on it, and would have on the stock theme too. The colour of the action,
+       with the ink that goes with it. */
+    --button-background-delete: var(--azimuth-danger);
+}
+
+/* `--pp-white` cannot be remapped — it is white text on coloured fills fourteen
+   times over. These two are the places it is used as a *background* under the
+   page's own text colour: the author cell of each plugin table, 1.24:1. */
+.manual-plugins-table.manual-plugins-table th.available-plugins-author,
+#AvailablePluginsTable th.available-plugins-author.available-plugins-author {
+    background: var(--azimuth-surface-hi);
+}
+
+.btn-uninstall a,
+.btn-uninstall a i {
+    color: var(--azimuth-danger-contrast);
 }
 
 /* Its message boxes are painted #EEEEEE whatever the theme, and take the text

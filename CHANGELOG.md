@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2
+
+- PluginManager, second pass: the author cell of both plugin tables is painted white whatever the
+  theme and carries the page's own text colour — 1.24:1 in dark. Its `--pp-white` token cannot be
+  remapped, being white text on coloured fills fourteen times over, so the two rules that use it
+  as a *background* are overridden instead.
+- Its uninstall button was a pale pink carrying a link, at 1.5:1 — and would have been on the
+  stock theme too. It now takes the colour of the action, with the ink that goes with it.
+
 ## 1.0.1
 
 - Compatibility with the **PluginManager** plugin. Its stylesheet is written for a light
