@@ -1951,9 +1951,13 @@ td[class*="color-"] {
        line of its own for want of seven points: 27 for itself, 10 of gap and 377
        for the switcher, in 405. Letting the switcher shrink puts them side by side
        and gives the line back — 125 points of toolbar down to 93. */
+    /* `flex-basis: 0` and not `auto`: the switcher holds a `ul` set to `width: 100%`
+       just below, so its content width resolves to whatever the switcher already
+       is — a loop that makes its min-content 405 and leaves the gear no room. With
+       a basis of zero the switcher takes the free space instead of dictating it. */
     .project-header .views-switcher-component {
         order: 1;
-        flex: 1 1 auto;
+        flex: 1 1 0;
         min-width: 0;
     }
 
