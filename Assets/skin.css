@@ -1849,8 +1849,22 @@ td[class*="color-"] {
         min-width: 0;
     }
 
+    /* Kanboard sends the title to `order: 3` under 480 points, which put the logo
+       at the right edge — sensible when the three blocks each took their own row,
+       backwards once they share one. Left to right: where you are, what you are
+       looking at, what you can do. */
     header .title-container {
+        order: 1;
         overflow: hidden;
+    }
+
+    header .board-selector-container {
+        order: 2;
+    }
+
+    header .menus-container {
+        order: 3;
+        margin-left: auto;
     }
 
     header .title-container h1,
@@ -1928,14 +1942,38 @@ td[class*="color-"] {
        row of three or four reads better on a phone and costs three lines less, so
        this overrides it — on purpose, by load order, and said out loud here
        because an override that nobody wrote down is indistinguishable from a bug. */
+    /* The project header is already a wrapping flex row, and the gear was taking a
+       line of its own for want of seven points: 27 for itself, 10 of gap and 377
+       for the switcher, in 405. Letting the switcher shrink puts them side by side
+       and gives the line back — 125 points of toolbar down to 93. */
+    .project-header .views-switcher-component {
+        order: 1;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .project-header .dropdown-component {
+        order: 2;
+        flex: 0 0 auto;
+    }
+
+    .project-header .filter-box-component {
+        order: 3;
+        flex: 1 1 100%;
+    }
+
     .views {
         display: flex;
         width: 100%;
     }
 
+    /* Kanboard gives each tab `margin-top: 5px` under 560 points, from when they
+       were stacked blocks. In a row it lands as 6 points above the button against
+       1 below — the tab looked hung rather than centred. */
     .views li {
         flex: 1;
         justify-content: center;
+        margin-top: 0;
     }
 
     .views li a {
