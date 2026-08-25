@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+- The plugin description was one paragraph of 819 characters listing seven features in a row — the
+  changelog, not a description. Two sentences, 169 characters. Measured in both tables of
+  Settings > Plugins on a live instance: the directory table goes from five lines to **two** (a row
+  of 148px down to 70), and the installed table from 3.4 lines to **2.4** (70px down to 49). On a
+  390-point phone the directory goes from sixteen lines to four — though at that width the table is
+  still far too narrow, which is a separate matter.
+- The plugin speaks French. `getPluginDescription()` was already wrapped in `t()` — which most
+  plugins do not bother with, Kanboard's own Slack plugin included — so all that was missing was a
+  `Locale` folder and the `onStartup()` that loads it. It is the only string the application ever
+  prints: a stylesheet has no words of its own. `plugins.json`, which feeds the directory on
+  kanboard.org, is a static file in someone else's repository and stays English.
+- The same short description still has to reach `plugins.json`, which means a pull request on
+  `kanboard/website`. It will travel with the release, so that only one is opened there.
+
 ## 1.0.3
 
 - The tags of the task form were two empty boxes in the dark theme. Kanboard runs one Select2 in

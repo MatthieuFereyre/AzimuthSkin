@@ -3,6 +3,7 @@
 namespace Kanboard\Plugin\AzimuthSkin;
 
 use Kanboard\Core\Plugin\Base;
+use Kanboard\Core\Translator;
 
 /**
  * Azimuth skin for Kanboard.
@@ -38,6 +39,20 @@ class Plugin extends Base
         $this->template->hook->attach('template:layout:head', 'AzimuthSkin:layout/head');
     }
 
+    /**
+     * Kanboard registers this on `app.bootstrap` when the method exists, and it is
+     * the only place the plugin's own strings can reach the translator.
+     *
+     * A stylesheet has almost nothing to translate: the description below is the
+     * one string the application prints. It is wrapped in `t()` — which most
+     * plugins do not bother to do, Kanboard's own Slack plugin included — so the
+     * `Locale` folder is all that was missing.
+     */
+    public function onStartup()
+    {
+        Translator::load($this->languageModel->getCurrentLanguage(), __DIR__.'/Locale');
+    }
+
     public function getPluginName()
     {
         return 'AzimuthSkin';
@@ -45,7 +60,7 @@ class Plugin extends Base
 
     public function getPluginDescription()
     {
-        return t('A calm, high-contrast skin for both themes. Card colours become readable instead of decorative, task text gets a real typographic scale, and the toolbar stays on screen while the content scrolls. Every colour pair is checked against WCAG AA.');
+        return t('A calm, high-contrast skin for both themes, built for legibility rather than decoration: every colour pair it paints is checked against WCAG AA, and it reads on a phone.');
     }
 
     public function getPluginAuthor()
