@@ -1983,10 +1983,15 @@ span.count-menu-item.badge-manual.badge-manual {
 }
 
 /* Its buttons: the shape of every other button here, and the padding that shape
-   needs. The colour is already carried by the tokens. */
-.install-plugin.install-plugin,
-a.download-archive.download-archive,
-a.update-plugin.update-plugin,
+   needs. The colour is already carried by the tokens.
+
+   Three times and not two: PluginManager styles these through
+   `.install-plugin:link`, and `:link` counts as a class — so a doubled selector
+   ties at (0,2,0) and still loses on order. Measured on the deployed page, which
+   is the only reason this is three and not two. */
+.install-plugin.install-plugin.install-plugin,
+a.download-archive.download-archive.download-archive,
+a.update-plugin.update-plugin.update-plugin,
 td button.btn-update.btn-update {
     border-radius: var(--radius-pill);
     padding: 4px 14px;
