@@ -1829,11 +1829,35 @@ td[class*="color-"] {
     }
 
     /* Kanboard floors the title and the project selector at 300 points each, so on
-       a 390-point phone they take a row apiece and the shell costs 21% of the
-       screen before a single card. The row wraps on its own; it needs no floor. */
+       a 390-point phone they take a row apiece. The row wraps on its own; it needs
+       no floor.
+
+       Dropping the floor is not enough on its own, and this is the part the test
+       bench could not show: a flex item that may shrink still holds text that may
+       not — `min-width: auto` on the span inside — so the application title ran 80
+       points past the right edge of the document. Clipped by Kanboard's
+       `overflow-x: hidden`, therefore invisible, and widening the page all the
+       same. It truncates now. Found on a real device, not on the bench. */
     header .title-container,
     header .board-selector-container {
         min-width: 0;
+    }
+
+    header .title-container {
+        overflow: hidden;
+    }
+
+    header .title-container h1,
+    header .title-container .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Kanboard sizes the comment box in absolute points, which is wider than the
+       page once the page is a phone. */
+    textarea {
+        max-width: 100%;
     }
 
     #board {
