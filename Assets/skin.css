@@ -1967,21 +1967,27 @@ td[class*="color-"] {
     color: var(--azimuth-danger-contrast);
 }
 
-/* The other half of the two remaps above: where `--pp-orange` and `--pp-red-alt-3`
-   are a *fill* under white text, a hairline colour would have made them
-   unreadable. These keep a real ground, and the ink that goes with it. */
-.manual-plugin-count,
-span.count-menu-item.badge-manual {
+/* Every selector in this section is doubled, and it is not a flourish. `skin.css`
+   is served *before* PluginManager's sheet, so a tie on specificity goes to
+   PluginManager on order — the same reason `:root:root` is doubled above. Written
+   plainly the first time, these three rules simply did not apply, and the count
+   badge came out wearing the hairline colour meant for the table borders.
+
+   The other half of the two remaps above: where `--pp-orange` and `--pp-red-alt-3`
+   are a *fill* under white text, a hairline colour would have left white on a
+   near-transparent ground. These keep a real ground, and the ink that goes with it. */
+.manual-plugin-count.manual-plugin-count,
+span.count-menu-item.badge-manual.badge-manual {
     background-color: var(--azimuth-danger);
     border-color: var(--azimuth-danger);
 }
 
 /* Its buttons: the shape of every other button here, and the padding that shape
    needs. The colour is already carried by the tokens. */
-.install-plugin,
-a.download-archive,
-a.update-plugin,
-td button.btn-update {
+.install-plugin.install-plugin,
+a.download-archive.download-archive,
+a.update-plugin.update-plugin,
+td button.btn-update.btn-update {
     border-radius: var(--radius-pill);
     padding: 4px 14px;
 }
@@ -1989,11 +1995,11 @@ td button.btn-update {
 /* Each sidebar entry carried `border-left: 5px solid white` — a hard white rule
    down the left of a dark page, five times over. The active one takes the accent
    instead of the page's own ink, so the marker says which, not merely that. */
-#PluginSideBar > ul li {
+#PluginSideBar#PluginSideBar > ul li {
     border-left-color: var(--azimuth-divider);
 }
 
-#PluginSideBar > ul li.active {
+#PluginSideBar#PluginSideBar > ul li.active {
     border-left-color: var(--azimuth-cyan-ink);
 }
 
