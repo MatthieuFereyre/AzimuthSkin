@@ -1853,8 +1853,13 @@ td[class*="color-"] {
         width: 86vw;
     }
 
+    /* The menu inside now carries the height, so the padding that used to provide
+       it is given back. Touch targets cost vertical space — that is the trade, and
+       it is worth stating: this screen went from 21% of itself spent before the
+       first card to 27%, in exchange for controls that went from 15 points tall to
+       40. What is recoverable is recovered; the rest is the price. */
     #board th.board-column-header {
-        padding: 10px 12px 8px;
+        padding: 2px 12px 6px;
     }
 
     /* One column at a time, with a sliver of the next left showing so the board
@@ -1902,6 +1907,8 @@ td[class*="color-"] {
         align-items: center;
         justify-content: center;
         min-height: 40px;
+        padding-top: 0;
+        padding-bottom: 0;
     }
 }
 
