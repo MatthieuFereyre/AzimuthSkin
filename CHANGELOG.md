@@ -3,11 +3,12 @@
 ## Unreleased
 
 - The plugin description was one paragraph of 819 characters listing seven features in a row — the
-  changelog, not a description. Two sentences, 169 characters. Measured in both tables of
-  Settings > Plugins on a live instance: the directory table goes from five lines to **two** (a row
-  of 148px down to 70), and the installed table from 3.4 lines to **2.4** (70px down to 49). On a
-  390-point phone the directory goes from sixteen lines to four — though at that width the table is
-  still far too narrow, which is a separate matter.
+  changelog, not a description. Three sentences now, 223 characters. Measured by substituting the
+  text into the live tables of Settings > Plugins: the directory table, which is the one that
+  showed the fault, goes from five lines to **two** at 1400px (a row of 148px down to 70) and from
+  four lines to **one** at 1920px. The installed-plugins table keeps the height it already had —
+  3.4 lines, a 70px row — because its description column is far narrower; the gain there is that
+  three readable sentences replace a list of seven features at the same cost.
 - The plugin speaks French. `getPluginDescription()` was already wrapped in `t()` — which most
   plugins do not bother with, Kanboard's own Slack plugin included — so all that was missing was a
   `Locale` folder and the `onStartup()` that loads it. It is the only string the application ever

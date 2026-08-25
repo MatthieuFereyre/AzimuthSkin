@@ -60,7 +60,7 @@ class Plugin extends Base
 
     public function getPluginDescription()
     {
-        return t('A calm, high-contrast skin for both themes, built for legibility rather than decoration: every colour pair it paints is checked against WCAG AA, and it reads on a phone.');
+        return t('A calm, high-contrast skin, available in both dark and light themes. Built above all for legibility: every colour combination is checked against WCAG AA. It makes Kanboard easier to read, on a desktop as much as on a phone.');
     }
 
     public function getPluginAuthor()
