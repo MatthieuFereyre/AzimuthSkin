@@ -1582,6 +1582,16 @@ ul.dropdown-submenu-open {
     color: var(--azimuth-text-2);
 }
 
+/* These links are `inline-flex` with `align-items: normal`, so their children are
+   stretched to the tallest. Next to a 22-point avatar the caret gets a 22-point
+   box while keeping a 15-point line-height, and its glyph settles at the top of
+   that box rather than beside the avatar. Centring the row lets each child keep
+   its own height. The `+` menu escaped it only because both its children are
+   exactly 15 points tall. */
+.dropdown-menu-link-icon {
+    align-items: center;
+}
+
 #modal-box {
     border-radius: var(--radius-panel);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
@@ -2022,6 +2032,25 @@ td[class*="color-"] {
 @media (max-width: 560px) {
     #board th.board-column-header:not(.board-column-header-collapsed):not(.board-column-compact) {
         width: 92vw;
+    }
+
+    /* The three tabs need 368.7 points of min-content in the 330 the strip has, so
+       one of them has to give — and with `min-width: auto` the flex algorithm makes
+       it the last one, which collapsed to two letters while the other two kept
+       their full width. Sixteen points of padding either side is what does not fit:
+       at eight the three need 329.6 and all of them stay whole. Below that the text
+       becomes the binding constraint and further trimming buys nothing.
+       `min-width: 0` is the other half — under about 360 points nothing can make
+       them all fit, and this is what has the three share the loss instead of
+       leaving it to whichever comes last. */
+    .views li {
+        min-width: 0;
+    }
+
+    .views li a {
+        padding-left: 8px;
+        padding-right: 8px;
+        overflow: hidden;
     }
 }
 
