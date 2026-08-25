@@ -1,7 +1,7 @@
 /**
  * Contrast guard for the Azimuth skin — `node contrast.mjs` from this folder.
  *
- * Reads the tokens straight out of `Assets/skin.css` (light) and
+ * Reads the tokens out of every sheet in `Assets/` (light) and out of
  * `Assets/theme-dark.css` (dark) and checks every pair the stylesheet actually
  * paints on top of another: body text on the three surfaces, the card footers on
  * each of the sixteen fills, each tag pill's ink on its own chip, and each
@@ -25,11 +25,22 @@ const HERE = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z
 const COLOURS = ['red', 'cyan', 'orange', 'light-green', 'grey', 'yellow', 'blue', 'green',
   'purple', 'brown', 'deep-orange', 'dark-grey', 'pink', 'teal', 'lime', 'amber'];
 
+// The light palette is read from every sheet rather than from a named one: it
+// lives in `tokens.css` today, and naming that file here would make this guard go
+// quiet the day a token moves. Declarations that resolve through `var()` are
+// skipped — only literal colours can be measured.
 const readTokens = (file) => {
-  const css = fs.readFileSync(path.join(HERE, 'Assets', file), 'utf8');
+  const files = file === null
+    ? fs.readdirSync(path.join(HERE, 'Assets'))
+        .filter(f => f.endsWith('.css') && f !== 'theme-dark.css')
+        .sort()
+    : [file];
   const out = {};
-  for (const [, name, value] of css.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
-    if (!value.includes('var(')) out[name] = value.trim();
+  for (const f of files) {
+    const css = fs.readFileSync(path.join(HERE, 'Assets', f), 'utf8');
+    for (const [, name, value] of css.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+      if (!value.includes('var(')) out[name] = value.trim();
+    }
   }
   return out;
 };
@@ -65,7 +76,7 @@ const ratio = (fg, bg, ground) => {
   return (a + 0.05) / (b + 0.05);
 };
 
-const light = readTokens('skin.css');
+const light = readTokens(null);
 const dark = { ...light, ...readTokens('theme-dark.css') };
 
 let failed = 0;

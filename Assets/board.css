@@ -1,0 +1,254 @@
+/* ── Board ───────────────────────────────────────────────────────────────
+   Columns are separated by a gutter rather than by a border: the header cell and
+   the task cell below it then read as one panel, and no line is drawn twice at
+   the junctions. */
+#board {
+    border-collapse: separate;
+    border-spacing: 12px 0;
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+/* The two exclusions are not decoration: Kanboard sizes a collapsed or compact
+   column with a rule of the same specificity, printed earlier, so a bare
+   `#board th.board-column-header` would silently win over both. */
+#board th.board-column-header:not(.board-column-header-collapsed):not(.board-column-compact) {
+    width: 268px;
+}
+
+#board th.board-column-header {
+    padding: 12px 14px 10px;
+    border: none;
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    background: var(--azimuth-surface);
+}
+
+#board td[class*="board-column-"]:not(.board-column-task-collapsed) {
+    padding: 0 10px 12px;
+    border: none;
+    border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+    background: var(--azimuth-surface);
+    vertical-align: top;
+}
+
+.board-column-title .dropdown-menu,
+.board-column-title {
+    font-family: var(--azimuth-font-ui);
+    font-size: 0.92em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--azimuth-text);
+}
+
+.board-column-header-task-count {
+    color: var(--azimuth-mute);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+}
+
+.board-task-list {
+    min-height: 40px;
+}
+
+/* ── Board cards ─────────────────────────────────────────────────────────
+   The type colour stays, but it is no longer what the text sits on: the fill is
+   a deep tint in dark and the familiar pastel in light, and the saturated hue
+   moves to a bar on the leading edge, where it stays visible at a glance without
+   dragging the contrast of everything printed on top. */
+.task-board {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border-radius: var(--radius-card);
+    font-size: 0.92em;
+    box-shadow: 0 1px 2px var(--azimuth-shadow);
+}
+
+.task-board[class*="color-"] {
+    border: 1px solid var(--azimuth-divider);
+    border-left: 4px solid var(--edge, var(--azimuth-divider-strong));
+    background-color: var(--fill, var(--azimuth-surface));
+}
+
+div.task-board-recent {
+    border-width: 1px;
+    border-left-width: 4px;
+    box-shadow: 0 0 0 1px var(--azimuth-ring-recent);
+}
+
+/* A closed card is set apart by its outline, not by being faded out: dimming the
+   whole card took its footer under 4.5:1, which is the defect this skin exists to
+   fix. */
+div.task-board-status-closed {
+    border-style: dashed;
+    border-left-style: solid;
+    box-shadow: none;
+}
+
+.task-board-status-closed .task-board-title {
+    color: var(--azimuth-text-2);
+}
+
+.task-board-closed {
+    color: var(--azimuth-mute);
+}
+
+.task-board a,
+.task-board-title a {
+    color: var(--azimuth-text);
+}
+
+/* In rem, not em: the card already shrinks its own text, and the title is what
+   the board is read for. */
+.task-board-title {
+    margin-top: 2px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--azimuth-text);
+}
+
+.task-board-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86em;
+    color: var(--azimuth-text-2);
+}
+
+.task-board-header .dropdown-menu-link-icon strong,
+.task-board-header .dropdown-menu strong {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--azimuth-text-2);
+}
+
+.task-board-avatars {
+    margin-left: auto;
+    float: none;
+}
+
+.task-board-assignee {
+    color: var(--azimuth-text-2);
+}
+
+/* Kanboard prints these at half opacity, which is exactly the amount of contrast
+   the footer could not afford. Full opacity, muted colour, one AA-safe value. */
+.task-board-icons a,
+.task-board-icons span {
+    opacity: 1;
+    color: var(--azimuth-mute);
+}
+
+.task-board-icons a:hover,
+.task-board-icons span.tooltip:hover {
+    opacity: 1;
+    font-weight: inherit;
+    color: var(--azimuth-text);
+}
+
+.task-board-icons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    margin-top: 8px;
+    font-size: 0.82em;
+    color: var(--azimuth-mute);
+}
+
+.task-board-icons .task-board-icons-row {
+    line-height: 20px;
+}
+
+.task-board .task-priority,
+.task-board .task-time-estimated,
+.task-board .task-score {
+    padding: 1px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--chip, var(--azimuth-surface-hi));
+    color: var(--ink, var(--azimuth-text-2));
+    font-variant-numeric: tabular-nums;
+}
+
+.task-board .task-date {
+    color: var(--azimuth-mute);
+    font-weight: 400;
+}
+
+span.task-date-today {
+    color: var(--azimuth-cyan-ink);
+    font-weight: 600;
+}
+
+span.task-date-overdue {
+    color: var(--azimuth-danger-ink);
+    font-weight: 600;
+}
+
+.task-board span.task-icon-age-total,
+.task-board span.task-icon-age-column {
+    border-color: var(--azimuth-divider-strong);
+    color: var(--azimuth-mute);
+}
+
+/* Task age and days-in-column: two halves of one pill rather than two boxes
+   overlapped by a negative margin. */
+span.task-icon-age-total {
+    padding: 1px 6px 1px 9px;
+    border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+}
+
+span.task-icon-age-column {
+    margin-left: -1px;
+    padding: 1px 9px 1px 6px;
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+}
+
+.task-board-icons .flag-milestone,
+.task-list-icons .flag-milestone {
+    color: var(--azimuth-success-ink);
+}
+
+/* ── Tags and categories ─────────────────────────────────────────────────
+   The pill that started this: grey on pastel, around 1.8:1. It now carries its
+   own fill and its own ink, both taken from the tag colour. */
+.task-tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.task-tags li {
+    margin: 0;
+    padding: 2px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--chip, var(--azimuth-surface-hi));
+    color: var(--ink, var(--azimuth-text));
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.task-board-category-container {
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
+.task-board-category,
+.table-list-category {
+    padding: 2px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--chip, var(--azimuth-surface-hi));
+    color: var(--ink, var(--azimuth-text));
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.task-board-category a,
+.table-list-category a {
+    color: inherit;
+}

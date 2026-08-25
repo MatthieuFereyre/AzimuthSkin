@@ -1,0 +1,445 @@
+/* ── Task detail ─────────────────────────────────────────────────────── */
+#task-summary h2 {
+    margin-bottom: 12px;
+    font-size: 1.6em;
+}
+
+.task-summary-container {
+    padding: 18px 20px;
+    border-radius: var(--radius-panel);
+    box-shadow: 0 1px 2px var(--azimuth-shadow);
+}
+
+.task-summary-container[class*="color-"] {
+    border: 1px solid var(--azimuth-divider);
+    border-left: 4px solid var(--edge, var(--azimuth-divider-strong));
+    background-color: var(--fill, var(--azimuth-surface));
+}
+
+.task-summary-column strong {
+    color: var(--azimuth-text-2);
+    font-weight: 600;
+}
+
+.task-summary-column a,
+.task-summary-column a:hover {
+    color: var(--azimuth-cyan-ink);
+}
+
+/* ── The toolbar holds still, the content scrolls under it ───────────────
+   On every view that carries the project toolbar — board, list, overview,
+   settings — the application header and that toolbar stay in place, and only
+   what sits below them moves.
+
+   Two arrangements, and the difference is where the scrollbar starts.
+
+   Where a single element holds the content — the board, the list, a two-pane
+   view — the toolbar leaves the scroller and becomes a fixed rung of a flex
+   column. The scrollbar then starts *below* it.
+
+   Where the content is several blocks with nothing wrapping them — the project
+   overview — there is no element to scroll, so the toolbar is pinned inside the
+   scroller instead. Its scrollbar runs the full height, beside the toolbar.
+   That is the fallback, not the intent: CSS cannot wrap what the template did
+   not wrap.
+
+   `:has()` is what makes any of it possible without touching a template: nothing
+   on <body> says which page is open. Where `:has()` is missing, the whole block
+   is dropped and the page scrolls as before.
+
+   Above 768px only. Below it Kanboard stacks the menus *under* the content, and
+   freezing the shell would put half the page out of reach. */
+@media (min-width: 769px) {
+    body:has(.project-header) {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding-bottom: 0;
+        overflow: hidden;
+    }
+
+    body:has(.project-header) > header {
+        flex: 0 0 auto;
+    }
+
+    body:has(.project-header) > .page {
+        flex: 1 1 auto;
+        min-height: 0;
+        padding-bottom: 18px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    body:has(.project-header) .project-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        margin-bottom: 14px;
+        padding: 6px 0 10px;
+        background: var(--azimuth-bg);
+    }
+
+    /* ── The views that own their scroller ──
+       `.skin-scroll` is the one the stylesheet does not get for free: the
+       project overview renders several blocks with nothing around them, and
+       `skin.js` wraps them so this view can join the others. */
+    body:has(#board-container) > .page,
+    body:has(.page > .table-list) > .page,
+    body:has(.skin-scroll) > .page,
+    body:has(.sidebar-container) > .page {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 0;
+        overflow: hidden;
+    }
+
+    body:has(#board-container) #main,
+    body:has(.skin-scroll) #main,
+    body:has(.sidebar-container) #main {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    body:has(#board-container) .project-header,
+    body:has(.page > .table-list) .project-header,
+    body:has(.skin-scroll) .project-header,
+    body:has(.sidebar-container) .project-header {
+        position: static;
+        flex: 0 0 auto;
+        padding: 0;
+    }
+
+    /* `min-height: 0`: a flex item refuses to shrink below its content by
+       default, and without it the scrollbar comes back on the page. */
+    body:has(.project-header) #board-container,
+    body:has(.project-header) > .page > .table-list,
+    body:has(.project-header) .skin-scroll,
+    body:has(.project-header) .sidebar-container {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    /* The list is scoped to a direct child of the page on purpose: project
+       settings render a `.table-list` too, inside a pane that already scrolls,
+       and turning that one into a scroller would give it a second scrollbar. */
+    /* `scrollbar-gutter: stable` so the content does not jump sideways by the
+       width of the scrollbar the moment it becomes long enough to need one. */
+    body:has(.project-header) #board-container,
+    body:has(.project-header) > .page > .table-list,
+    body:has(.project-header) .skin-scroll {
+        overflow: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+    }
+
+    body:has(.project-header) .skin-scroll {
+        padding-right: 4px;
+        padding-bottom: 18px;
+    }
+
+    /* The paginator sits under the list rather than at the end of it. */
+    body:has(.project-header) > .page > .pagination {
+        flex: 0 0 auto;
+        padding-top: 10px;
+    }
+
+    /* Two panes: the shell holds completely still and each pane scrolls on its
+       own, so the action menu stays under the hand. */
+    body:has(.project-header) .sidebar,
+    body:has(.project-header) .sidebar-content {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    body:has(.project-header) .sidebar-content {
+        padding-right: 10px;
+        padding-bottom: 18px;
+        scrollbar-gutter: stable;
+    }
+}
+
+.accordion-title {
+    font-family: var(--azimuth-font-display);
+    font-size: 1.15em;
+    font-weight: 700;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--azimuth-divider);
+}
+
+.accordion-content {
+    margin-top: 14px;
+}
+
+/* ── Written bodies: descriptions, comments, tooltips ────────────────────
+   Kanboard styles this block in nine declarations, all of them spacing, so a
+   description came out as one even grey column: no scale between a title and a
+   paragraph, inline code no different from prose, and a `pre` painted #fbfbfb
+   with a #ddd border — invisible in the light theme, glaring in the dark one.
+
+   The scale is doing the work here, not the colour. The space *above* a heading
+   is larger than the space below it, which is what ties a title to its own
+   paragraph instead of leaving it floating between two blocks. */
+.markdown {
+    font-family: var(--azimuth-font-body);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--azimuth-text);
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+    font-family: var(--azimuth-font-display);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+.markdown h1 {
+    margin: 0 0 14px;
+    font-size: 1.55em;
+    color: var(--azimuth-heading);
+}
+
+.markdown h2 {
+    margin: 32px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--azimuth-divider);
+    font-size: 1.28em;
+    color: var(--azimuth-heading);
+}
+
+.markdown h3 {
+    margin: 26px 0 8px;
+    font-size: 1.1em;
+    color: var(--azimuth-heading-2);
+}
+
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+    margin: 20px 0 6px;
+    font-size: 1em;
+    color: var(--azimuth-heading-2);
+}
+
+/* A body opens on its title, never on a gap. */
+.markdown > :first-child {
+    margin-top: 0;
+}
+
+.markdown p {
+    margin: 0 0 12px;
+}
+
+.markdown ul,
+.markdown ol {
+    margin: 0 0 14px;
+    padding-left: 22px;
+}
+
+.markdown li {
+    margin-bottom: 5px;
+}
+
+/* The marker is the only part of a list the eye can use to count it, and it cost
+   nothing to make it legible: accent, and heavy enough for a number to read. */
+.markdown li::marker {
+    color: var(--azimuth-cyan-ink);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* A nested level steps back to the quieter tone rather than repeating the
+   accent, which is how the nesting shows without an extra indent. */
+.markdown li li::marker {
+    color: var(--azimuth-heading-2);
+}
+
+.markdown strong {
+    font-weight: 700;
+    color: var(--azimuth-text);
+}
+
+.markdown a {
+    color: var(--azimuth-cyan-ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* Inline code gets an ink of its own. A path or a symbol inside a sentence is
+   not prose, and the pill alone was not saying so. */
+.markdown code {
+    padding: 1px 6px;
+    border: 1px solid var(--azimuth-divider);
+    border-radius: 7px;
+    background: var(--azimuth-surface-hi);
+    color: var(--azimuth-code);
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.86em;
+}
+
+.markdown pre {
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-shot);
+    background: var(--azimuth-tint);
+    color: var(--azimuth-text);
+    line-height: 1.5;
+}
+
+.markdown pre code {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: 0.92em;
+}
+
+/* The callout: a panel, not a bare indent. Its boundary is the accent rule on
+   the leading edge — the fill is too close to the page to carry it alone. */
+.markdown blockquote {
+    margin: 0 0 16px;
+    padding: 12px 18px;
+    border: 1px solid var(--azimuth-divider);
+    border-left: 4px solid var(--azimuth-cyan-ink);
+    border-radius: 0 var(--radius-shot) var(--radius-shot) 0;
+    background: var(--azimuth-tint);
+    color: var(--azimuth-text);
+    font-style: italic;
+}
+
+.markdown blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+/* A rule that fades out rather than a grey line across the whole measure: it
+   separates without drawing a second border into the page. */
+.markdown hr {
+    height: 2px;
+    margin: 26px 0;
+    border: 0;
+    border-radius: 2px;
+    background-image: linear-gradient(90deg, var(--azimuth-cyan-ink), transparent 62%);
+}
+
+/* `display: block` is what makes a table scrollable — the rows inside still form
+   a table through anonymous boxes. Without it a table wider than its column is not
+   scrolled but *cut*: Kanboard sets `overflow-x: hidden` on the body, so the part
+   past the edge cannot be reached at all. Measured on a task page at 390 points,
+   457 of document for 390 of viewport, 67 of them unreachable — a contrast table
+   in a comment, three columns of which the last was simply gone.
+
+   Kanboard has a fix of its own, `table.table-scrolling`, but it only reaches the
+   tables it puts that class on, and the ones Markdown produces do not carry it.
+   Scoped to prose: the board is a `<table>` too, and must not be touched. */
+.markdown table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    font-size: 0.94em;
+}
+
+.markdown table th {
+    background: var(--azimuth-tint);
+    border-color: var(--azimuth-divider);
+    color: var(--azimuth-heading);
+    font-family: var(--azimuth-font-ui);
+    font-size: 0.9em;
+    letter-spacing: 0.02em;
+}
+
+.markdown table td {
+    border-color: var(--azimuth-divider);
+}
+
+.comment {
+    padding: 12px 14px;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--azimuth-divider);
+    background: var(--azimuth-surface);
+}
+
+.comment + .comment {
+    margin-top: 10px;
+}
+
+.comment-title {
+    color: var(--azimuth-text-2);
+}
+
+.comment-username {
+    color: var(--azimuth-text);
+}
+
+.comment-date,
+.comment-visibility {
+    color: var(--azimuth-mute);
+}
+
+/* ── List view ───────────────────────────────────────────────────────── */
+.table-list-header {
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    padding: 4px 12px;
+}
+
+.table-list-header a {
+    color: var(--azimuth-text);
+}
+
+.table-list-header a:hover,
+.table-list-header a:focus,
+.table-list-header .table-list-header-count {
+    color: var(--azimuth-text-2);
+}
+
+.table-list-row {
+    padding: 6px 12px;
+    background: var(--azimuth-surface);
+}
+
+.table-list-row:last-child {
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+}
+
+.table-list-row .table-list-title a {
+    color: var(--azimuth-text);
+}
+
+.table-list-row .table-list-details {
+    color: var(--azimuth-mute);
+    font-weight: 400;
+}
+
+.table-list-row .table-list-details strong {
+    color: var(--azimuth-text-2);
+    font-weight: 600;
+}
+
+.table-list-row[class*="color-"] {
+    border-left: 4px solid var(--edge, var(--azimuth-divider-strong));
+}
+
+.task-table a,
+.dashboard-table-link {
+    color: var(--azimuth-text);
+}
+
+table th {
+    font-weight: 600;
+    padding: 8px 10px;
+}
+
+table td {
+    padding: 8px 10px;
+}

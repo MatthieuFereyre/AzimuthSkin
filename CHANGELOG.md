@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+### The stylesheet is nine sheets
+
+- `skin.css` had reached 2 116 lines across twenty-five sections, and its zones had stopped having
+  much to say to each other. It is now nine sheets — tokens, base, chrome, board, task, controls,
+  colours, narrow, plugin-manager — registered in that order in `Plugin.php`, because
+  `Hook::on()` appends and Kanboard renders the listeners in registration order.
+- They are **contiguous slices**, cut at section boundaries and never reordered. That is the whole
+  point: several rules here win on nothing but document order — the phone media query over the
+  tablet one, `:root:root` over PluginManager's named rules, the segmented control over Kanboard's
+  stacked tabs. A domain-shaped split would have reordered them and changed which rule wins,
+  silently. Cutting contiguously makes the cascade identical *by construction*, and provable: the
+  concatenation of the nine in load order reproduces the old file byte for byte, 71 747 characters.
+  Verified again afterwards by diffing the computed styles of every element on six pages at two
+  widths — 9 700 elements, sixty properties each, no difference.
+- `contrast.mjs` no longer reads a named sheet. It walks `Assets/` instead: naming `tokens.css`
+  would have made the guard go quiet the day a token moved.
+- The deployment check no longer compares three named files. It enumerates everything committed,
+  and asserts that every sheet named in `Plugin.php` is on disk. Naming files had already made it
+  stop covering the change: `Locale/` was added and never looked at.
+
 - The plugin description was one paragraph of 819 characters listing seven features in a row — the
   changelog, not a description. Three sentences now, 223 characters. Measured by substituting the
   text into the live tables of Settings > Plugins: the directory table, which is the one that

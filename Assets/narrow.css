@@ -1,0 +1,212 @@
+/* ── Narrow screens ──────────────────────────────────────────────────────
+   Measured on the real instance at 390 points rather than by resizing a window,
+   which Chrome ignores when the window is maximised: the page is fetched with the
+   session, given a `<base>`, and re-hosted in an iframe of the target width, so
+   the media queries evaluate against a phone. */
+@media (max-width: 768px) {
+    .page {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    header {
+        padding: 8px 10px;
+    }
+
+    /* Kanboard floors the title and the project selector at 300 points each, so on
+       a 390-point phone they take a row apiece. The row wraps on its own; it needs
+       no floor.
+
+       Dropping the floor is not enough on its own, and this is the part the test
+       bench could not show: a flex item that may shrink still holds text that may
+       not — `min-width: auto` on the span inside — so the application title ran 80
+       points past the right edge of the document. Clipped by Kanboard's
+       `overflow-x: hidden`, therefore invisible, and widening the page all the
+       same. It truncates now. Found on a real device, not on the bench. */
+    header .title-container,
+    header .board-selector-container {
+        min-width: 0;
+    }
+
+    /* Kanboard sends the title to `order: 3` under 480 points, which put the logo
+       at the right edge — sensible when the three blocks each took their own row,
+       backwards once they share one. Left to right: where you are, what you are
+       looking at, what you can do. */
+    header .title-container {
+        order: 1;
+        overflow: hidden;
+    }
+
+    header .board-selector-container {
+        order: 2;
+    }
+
+    header .menus-container {
+        order: 3;
+        margin-left: auto;
+    }
+
+    header .title-container h1,
+    header .title-container .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Kanboard sizes the comment box in absolute points, which is wider than the
+       page once the page is a phone. Paired with the `border-box` above, this is
+       what actually holds it inside. */
+    textarea {
+        max-width: 100%;
+    }
+
+    #board {
+        border-spacing: 8px 0;
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+
+    /* The two `:not()` are load-bearing, and this is the rule that proves it.
+       Until now this block asked for `width: 240px` on a bare
+       `#board th.board-column-header` — which the skin's *own* base rule beat on
+       specificity, (1,3,1) against (1,1,1). The declaration had never once
+       applied: columns stayed 268 points wide on a phone, and 1.27 of one fitted
+       on screen. A rule that loses to its own stylesheet is worse than no rule,
+       because it reads as handled. */
+    /* A tablet has room for two columns and a half; a phone has room for one. The
+       cap belongs to the tablet only — put on the shared query it quietly undid
+       the phone case, taking 390 points from 335 back to 300 and leaving the
+       column eleven percent wider than before the change. Which is to say: no
+       visible difference, which is exactly what was reported. */
+    #board th.board-column-header:not(.board-column-header-collapsed):not(.board-column-compact) {
+        width: 300px;
+    }
+
+    /* The menu inside now carries the height, so the padding that used to provide
+       it is given back. Touch targets cost vertical space — that is the trade, and
+       it is worth stating: this screen went from 21% of itself spent before the
+       first card to 27%, in exchange for controls that went from 15 points tall to
+       40. What is recoverable is recovered; the rest is the price. */
+    #board th.board-column-header {
+        padding: 2px 12px 6px;
+    }
+
+    /* One column at a time, with a sliver of the next left showing so the board
+       still says it continues. `proximity` rather than `mandatory`: dragging a
+       card towards a neighbouring column scrolls this container, and a mandatory
+       snap fights the drag. */
+    #board-container {
+        scroll-snap-type: x proximity;
+        scroll-padding-left: 8px;
+    }
+
+    #board th.board-column-header,
+    #board td[class*="board-column-"] {
+        scroll-snap-align: start;
+    }
+
+    /* Fifteen points tall, and the only way into half of what a column or a card
+       can do. The hit area grows; nothing moves. The icons in a card's footer are
+       deliberately left out — twenty-five points added to every card costs more
+       than it returns on the one screen where vertical space is the scarce thing. */
+    .board-column-title a.dropdown-menu,
+    .task-board-header a.dropdown-menu,
+    .board-add-icon a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+    }
+
+    /* Kanboard stacks the view tabs into full-width blocks under 560 points. One
+       row of three or four reads better on a phone and costs three lines less, so
+       this overrides it — on purpose, by load order, and said out loud here
+       because an override that nobody wrote down is indistinguishable from a bug. */
+    /* The project header is already a wrapping flex row, and the gear was taking a
+       line of its own for want of seven points: 27 for itself, 10 of gap and 377
+       for the switcher, in 405. Letting the switcher shrink puts them side by side
+       and gives the line back — 125 points of toolbar down to 93. */
+    /* `flex-basis: 0` and not `auto`: the switcher holds a `ul` set to `width: 100%`
+       just below, so its content width resolves to whatever the switcher already
+       is — a loop that makes its min-content 405 and leaves the gear no room. With
+       a basis of zero the switcher takes the free space instead of dictating it. */
+    .project-header .views-switcher-component {
+        order: 1;
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .project-header .dropdown-component {
+        order: 2;
+        flex: 0 0 auto;
+    }
+
+    .project-header .filter-box-component {
+        order: 3;
+        flex: 1 1 100%;
+    }
+
+    .views {
+        display: flex;
+        width: 100%;
+    }
+
+    /* Kanboard gives each tab `margin-top: 5px` under 560 points, from when they
+       were stacked blocks. In a row it lands as 6 points above the button against
+       1 below — the tab looked hung rather than centred. */
+    .views li {
+        flex: 1;
+        justify-content: center;
+        margin-top: 0;
+    }
+
+    .views li a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+/* ── Phones ──────────────────────────────────────────────────────────────
+   Below 560 points the board stops trying to show more than one column. This is
+   the query that does the visible work, and it is separate from the one above on
+   purpose: the shared `min(86vw, 300px)` was right for a tablet and pointless for
+   a phone, which is how a change that measured well ended up looking like nothing
+   at all. 92vw so a sliver of the next column still shows — the board has to say
+   it continues. */
+@media (max-width: 560px) {
+    #board th.board-column-header:not(.board-column-header-collapsed):not(.board-column-compact) {
+        width: 92vw;
+    }
+
+    /* The three tabs need 368.7 points of min-content in the 330 the strip has, so
+       one of them has to give — and with `min-width: auto` the flex algorithm makes
+       it the last one, which collapsed to two letters while the other two kept
+       their full width. Sixteen points of padding either side is what does not fit:
+       at eight the three need 329.6 and all of them stay whole. Below that the text
+       becomes the binding constraint and further trimming buys nothing.
+       `min-width: 0` is the other half — under about 360 points nothing can make
+       them all fit, and this is what has the three share the loss instead of
+       leaving it to whichever comes last. */
+    .views li {
+        min-width: 0;
+    }
+
+    /* Block and not flex, and the height comes from `line-height`: `text-overflow`
+       has nothing to bite on inside a flex container, where the label is an
+       anonymous item rather than a line of text. Same 40-point target, and a
+       label that runs out of room now says so with an ellipsis instead of being
+       cut mid-word. */
+    .views li a {
+        display: block;
+        min-height: 0;
+        padding: 0 8px;
+        line-height: 40px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

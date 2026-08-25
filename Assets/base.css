@@ -1,0 +1,94 @@
+/* ── Base ────────────────────────────────────────────────────────────── */
+body {
+    font-family: var(--azimuth-font-ui);
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--azimuth-text);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--azimuth-font-display);
+    font-weight: 700;
+    color: var(--azimuth-text);
+    letter-spacing: -0.01em;
+}
+
+.page {
+    margin-left: 18px;
+    margin-right: 18px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Two rules and not one list: `:focus-visible` is younger than the browsers this
+   has to survive, and an unknown selector invalidates the whole list it sits in. */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+summary:focus {
+    outline: 2px solid var(--azimuth-cyan-ink);
+    outline-offset: 2px;
+}
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+summary:focus:not(:focus-visible) {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+    outline: 2px solid var(--azimuth-cyan-ink);
+    outline-offset: 2px;
+}
+
+/* ── Scrollbars ──────────────────────────────────────────────────────────
+   Two mechanisms on purpose, and they are not redundant: `scrollbar-width` and
+   `scrollbar-color` are the standard properties, inherited from :root, and are
+   all Firefox understands; the `::-webkit-` block is what older Chrome and
+   Safari answer to. Where both are supported the standard ones win, which is
+   why the two must describe the same thing.
+
+   The thumb is inset by a transparent border rather than made narrower: it keeps
+   a comfortable hit area while looking like a hairline. */
+:root {
+    scrollbar-width: thin;
+    scrollbar-color: var(--azimuth-scroll) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: var(--radius-pill);
+    background-color: var(--azimuth-scroll);
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--azimuth-scroll-hover);
+    background-clip: padding-box;
+}

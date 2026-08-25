@@ -1,0 +1,223 @@
+/* ── Application header ──────────────────────────────────────────────── */
+header {
+    align-items: center;
+    padding: 10px 18px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--azimuth-divider);
+}
+
+header h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3em;
+}
+
+.logo a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-shot);
+    background: var(--azimuth-surface-hi);
+    color: var(--azimuth-text);
+    opacity: 1;
+    font-family: var(--azimuth-font-display);
+    font-size: 0.82em;
+    font-weight: 700;
+}
+
+.logo a:hover,
+.logo a:focus {
+    color: var(--azimuth-text);
+    text-decoration: none;
+}
+
+.logo span,
+.logo a:hover span,
+.logo a:focus span {
+    color: var(--azimuth-cyan-ink);
+}
+
+header .title a {
+    color: var(--azimuth-text);
+}
+
+/* ── Project header: menu, view switcher, filter ─────────────────────── */
+.project-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.project-header .dropdown-component,
+.project-header .views-switcher-component {
+    float: none;
+    margin: 0;
+}
+
+.project-header .filter-box-component {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.views {
+    display: inline-flex;
+    margin: 0 4px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--azimuth-divider-strong);
+    border-radius: var(--radius-pill);
+}
+
+/* A segmented control: the container carries the shape and clips it, the segments
+   sit flush inside it. `border-radius: 0` is not redundant — Kanboard rounds each
+   tab by 5 points under 560, from when they were stacked blocks, and a rounded
+   rectangle floating inside a half-circle end reads as two ideas at once. */
+.views li {
+    display: flex;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: var(--azimuth-surface);
+}
+
+/* The two end segments carry the container's own curve, and squaring them off was
+   wrong. Clipping alone does not make a square fill meet a round rim: the child is
+   clipped at the padding box while the border is painted outside it, so along the
+   curve a hairline of page background shows between the fill and the rim. Give the
+   fill the same radius and the two curves coincide. This also shapes the active
+   segment's inset rim, which was being clipped square against a round end.
+
+   These override Kanboard's own `:first-child` / `:last-child`, which round them
+   by 5 points — the value that made a rounded rectangle float inside a pill. */
+.views li:first-child {
+    border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+}
+
+.views li:last-child {
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+}
+
+.views li a {
+    padding: 6px 16px;
+    color: var(--azimuth-text-2);
+}
+
+.views li a:hover {
+    background: var(--azimuth-surface-hi);
+    color: var(--azimuth-text);
+    text-decoration: none;
+}
+
+/* The rim is not decoration: the neighbouring segment turns `--azimuth-surface-hi` on
+   hover, and the accent alone sits at 2.7:1 against it — under the 3:1 a UI
+   component's boundary owes. The rim carries the boundary instead. */
+.views li.active {
+    background: var(--azimuth-cyan);
+    box-shadow: inset 0 0 0 1px var(--azimuth-cyan-ink);
+}
+
+.views li.active a {
+    color: var(--azimuth-cyan-contrast);
+    font-weight: 600;
+}
+
+/* An icon inside a link does not inherit the link's colour — Kanboard pins it with
+   `a .fa`. On the accent fill it stayed body-coloured while its label went white. */
+.views li.active a .fa {
+    color: var(--azimuth-cyan-contrast);
+}
+
+/* ── Project selector ────────────────────────────────────────────────────
+   The frame belongs to the container, not to the field: the component draws its
+   own chevron next to the input, and a border on the input itself would double
+   the outline. Kanboard strips it — and the skin's own input rule, printed later,
+   would have put it back. */
+.select-dropdown-input-container {
+    display: flex;
+    align-items: center;
+    max-width: 320px;
+    border: 1px solid var(--azimuth-divider-strong);
+    border-radius: var(--radius-pill);
+    background-color: var(--azimuth-surface);
+}
+
+/* `[type="text"]` is not redundant: without it this selector ties with the skin's
+   own field rule, and the winner would be whichever is printed last — the field
+   rule would hand the input back its border and draw a second outline inside the
+   container's. */
+.select-dropdown-input-container input[type="text"].select-dropdown-input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: 36px;
+    margin: 0;
+    padding: 0 34px 0 16px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--azimuth-text);
+}
+
+/* The focus ring belongs to the container too. Left on the input, it was drawn
+   inside the frame, around a field that has no border of its own. */
+.select-dropdown-input-container input[type="text"].select-dropdown-input:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
+.select-dropdown-input-container input[type="text"].select-dropdown-input:focus-visible {
+    outline: none;
+}
+
+.select-dropdown-input-container:focus-within {
+    border-color: var(--azimuth-cyan-ink);
+    box-shadow: 0 0 0 2px var(--azimuth-cyan-ink);
+}
+
+.select-dropdown-input-container .select-dropdown-chevron,
+.select-dropdown-input-container .select-loading-icon {
+    top: 50%;
+    right: 14px;
+    color: var(--azimuth-text-2);
+    transform: translateY(-50%);
+}
+
+#select-dropdown-menu {
+    padding: 6px;
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 28px var(--azimuth-shadow-lg);
+    overflow-y: auto;
+}
+
+.select-dropdown-menu-item {
+    padding: 7px 12px;
+    border: none;
+    border-radius: var(--radius-shot);
+    color: var(--azimuth-text);
+}
+
+.input-addon-field,
+.input-addon-item {
+    border-color: var(--azimuth-divider-strong);
+    padding: 6px 12px;
+}
+
+.input-addon-field:first-child {
+    border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+    padding-left: 16px;
+}
+
+.input-addon-item:last-child {
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+    padding-right: 14px;
+}
+
+.input-addon-field {
+    color: var(--azimuth-text);
+}

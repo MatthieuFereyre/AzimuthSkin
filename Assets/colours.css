@@ -1,0 +1,198 @@
+/* ── Colours Kanboard writes literally ───────────────────────────────────
+   Everything above rides on custom properties. These do not: they are hexes
+   printed in the theme sheet, and all of them assume a light background. On the
+   dark theme they were black on black, or a #ccc line drawn at full strength. */
+.page-header h2 {
+    border-bottom: 1px solid var(--azimuth-divider);
+}
+
+.form-required {
+    color: var(--azimuth-danger-ink);
+}
+
+.icon-success {
+    color: var(--azimuth-success-ink);
+}
+
+.icon-error,
+#file-list li .file-error {
+    color: var(--azimuth-danger-ink);
+}
+
+.task-board-saving-icon {
+    color: var(--azimuth-text);
+}
+
+.menu-inline li .active a,
+a.board-swimlane-toggle:hover,
+a.board-swimlane-toggle:focus,
+a i.web-notification-icon:focus,
+a i.web-notification-icon:hover {
+    color: var(--azimuth-text);
+}
+
+.task-list-avatars .task-avatar-assignee {
+    color: var(--azimuth-mute);
+}
+
+.task-list-avatars:hover .task-avatar-assignee {
+    color: var(--azimuth-text);
+}
+
+td a.dropdown-menu i,
+td a.dropdown-menu:hover strong,
+td a.dropdown-menu:hover strong i,
+td a.dropdown-menu:hover i {
+    color: var(--azimuth-text-2);
+}
+
+#suggest-menu {
+    background: var(--azimuth-surface);
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 28px var(--azimuth-shadow-lg);
+}
+
+.suggest-menu-item.active,
+.select-dropdown-menu-item.active {
+    background: var(--azimuth-cyan);
+    color: var(--azimuth-cyan-contrast);
+}
+
+.suggest-menu-item.active small {
+    color: var(--azimuth-cyan-contrast);
+}
+
+/* ── Task colours ────────────────────────────────────────────────────────
+   Kanboard prints `.task-board.color-red { background-color: … }` in an inline
+   <style> in the head, so a plain `.task-board` rule would lose on specificity.
+   Each colour class only sets four local values here; the rules above read them
+   through `--fill`, `--edge`, `--chip` and `--ink`. */
+.color-red {
+    --fill: var(--kb-red-fill);
+    --edge: var(--kb-red-edge);
+    --chip: var(--kb-red-chip);
+    --ink: var(--kb-red-ink);
+}
+
+.color-cyan {
+    --fill: var(--kb-cyan-fill);
+    --edge: var(--kb-cyan-edge);
+    --chip: var(--kb-cyan-chip);
+    --ink: var(--kb-cyan-ink);
+}
+
+.color-orange {
+    --fill: var(--kb-orange-fill);
+    --edge: var(--kb-orange-edge);
+    --chip: var(--kb-orange-chip);
+    --ink: var(--kb-orange-ink);
+}
+
+.color-light_green {
+    --fill: var(--kb-light-green-fill);
+    --edge: var(--kb-light-green-edge);
+    --chip: var(--kb-light-green-chip);
+    --ink: var(--kb-light-green-ink);
+}
+
+.color-grey {
+    --fill: var(--kb-grey-fill);
+    --edge: var(--kb-grey-edge);
+    --chip: var(--kb-grey-chip);
+    --ink: var(--kb-grey-ink);
+}
+
+.color-yellow {
+    --fill: var(--kb-yellow-fill);
+    --edge: var(--kb-yellow-edge);
+    --chip: var(--kb-yellow-chip);
+    --ink: var(--kb-yellow-ink);
+}
+
+.color-blue {
+    --fill: var(--kb-blue-fill);
+    --edge: var(--kb-blue-edge);
+    --chip: var(--kb-blue-chip);
+    --ink: var(--kb-blue-ink);
+}
+
+.color-green {
+    --fill: var(--kb-green-fill);
+    --edge: var(--kb-green-edge);
+    --chip: var(--kb-green-chip);
+    --ink: var(--kb-green-ink);
+}
+
+.color-purple {
+    --fill: var(--kb-purple-fill);
+    --edge: var(--kb-purple-edge);
+    --chip: var(--kb-purple-chip);
+    --ink: var(--kb-purple-ink);
+}
+
+.color-brown {
+    --fill: var(--kb-brown-fill);
+    --edge: var(--kb-brown-edge);
+    --chip: var(--kb-brown-chip);
+    --ink: var(--kb-brown-ink);
+}
+
+.color-deep_orange {
+    --fill: var(--kb-deep-orange-fill);
+    --edge: var(--kb-deep-orange-edge);
+    --chip: var(--kb-deep-orange-chip);
+    --ink: var(--kb-deep-orange-ink);
+}
+
+.color-dark_grey {
+    --fill: var(--kb-dark-grey-fill);
+    --edge: var(--kb-dark-grey-edge);
+    --chip: var(--kb-dark-grey-chip);
+    --ink: var(--kb-dark-grey-ink);
+}
+
+.color-pink {
+    --fill: var(--kb-pink-fill);
+    --edge: var(--kb-pink-edge);
+    --chip: var(--kb-pink-chip);
+    --ink: var(--kb-pink-ink);
+}
+
+.color-teal {
+    --fill: var(--kb-teal-fill);
+    --edge: var(--kb-teal-edge);
+    --chip: var(--kb-teal-chip);
+    --ink: var(--kb-teal-ink);
+}
+
+.color-lime {
+    --fill: var(--kb-lime-fill);
+    --edge: var(--kb-lime-edge);
+    --chip: var(--kb-lime-chip);
+    --ink: var(--kb-lime-ink);
+}
+
+.color-amber {
+    --fill: var(--kb-amber-fill);
+    --edge: var(--kb-amber-edge);
+    --chip: var(--kb-amber-chip);
+    --ink: var(--kb-amber-ink);
+}
+
+.task-tag[class*="color-"],
+.task-board-category[class*="color-"],
+.table-list-category[class*="color-"] {
+    background-color: var(--chip);
+    border-color: transparent;
+    color: var(--ink);
+}
+
+td[class*="color-"] {
+    background-color: var(--fill);
+}
+
+.color-picker-square[class*="color-"] {
+    background-color: var(--fill);
+    border-color: var(--edge);
+}

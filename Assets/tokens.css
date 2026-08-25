@@ -1,0 +1,313 @@
+/* ============================================================================
+   Azimuth skin for Kanboard 1.2.x — the light palette, and the fonts.
+
+   First of nine sheets. Kanboard drives its two themes entirely from custom
+   properties declared on `:root`, so most of the work here is redeclaring those
+   properties in terms of the design tokens of azimuth.web (`--azimuth-*`).
+   Everything downstream — tables, dropdowns, alerts, inputs — follows without
+   being named.
+
+   What custom properties cannot reach is the handful of colours Kanboard writes
+   literally in its sheet (`color:#000` on card titles, `opacity:.5` on card
+   icons) and the sixteen task colours it prints in an inline `<style>` in the
+   head. Those are overridden by name, in `colours.css`.
+
+   The dark palette lives in `theme-dark.css` and redefines the tokens only.
+
+   ── The order of the sheets is the cascade ──
+   tokens · base · chrome · board · task · controls · colours · narrow ·
+   plugin-manager, registered in that order in `Plugin.php`. They are contiguous
+   slices of what used to be a single `skin.css`, cut at section boundaries and
+   never reordered: concatenating them in that order reproduces that file byte
+   for byte. Several rules here win on nothing but document order — the phone
+   media query over the tablet one, `:root:root` over PluginManager's named
+   rules — so moving a section between sheets is not a cosmetic change.
+   ========================================================================== */
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('fonts/Inter-Variable.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Spectral';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/spectral-700-normal-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Newsreader';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/newsreader-400-normal-latin.woff2') format('woff2');
+}
+
+/* ── Tokens ──────────────────────────────────────────────────────────────
+   The light palette, and the default: if the head hook ever stops firing, this
+   is what a dark-theme user gets — a coherent light interface rather than a
+   broken one. */
+:root {
+    --azimuth-bg: #F5FAFC;
+    --azimuth-surface: #FFFFFF;
+    --azimuth-surface-hi: #EAF4F8;
+    --azimuth-text: #181C1D;
+    --azimuth-text-2: #42494B;
+    /* azimuth.web reads #676F71 here. It clears AA on the page background but not
+       on the tinted cards, where the age and estimate badges sit: 4.2:1. Two
+       notches darker covers the darkest of the sixteen fills. */
+    --azimuth-mute: #5A6164;
+    --azimuth-divider: rgba(0, 0, 0, 0.08);
+    --azimuth-divider-strong: rgba(37, 110, 151, 0.38);
+    --azimuth-cyan: #256E97;
+    --azimuth-cyan-contrast: #FFFFFF;
+    --azimuth-cyan-ink: #256E97;
+    /* Headings inside a written body — descriptions and comments. The top two
+       levels take the accent; the ones below take the same hue with its chroma
+       taken out, so the hierarchy shows even where the type sizes are close. */
+    --azimuth-heading: var(--azimuth-cyan-ink);
+    --azimuth-heading-2: #3C5767;
+    /* Inline code and its blocks. Deliberately outside the accent family: a path
+       in the middle of a sentence is not a link, and it should not read as one. */
+    --azimuth-code: #8C3F2E;
+    /* The ground of the blocks that step out of the prose — callouts, code
+       blocks, table headers. Barely 1.1:1 against the page on purpose: what marks
+       the boundary is the accent rule beside it, not the fill. */
+    --azimuth-tint: #E8F1F7;
+    /* Scrollbars. Around 3:1 against the surfaces they sit on: quiet enough to
+       disappear while reading, still findable when looked for. */
+    --azimuth-scroll: #849095;
+    --azimuth-scroll-hover: #6C797E;
+    /* The hairline around a task touched in the last 48 hours. Deliberately
+       neutral: the colour of a card already means its type, and a second
+       coloured signal on the same edge read as an alert. */
+    --azimuth-ring-recent: rgba(24, 28, 29, 0.30);
+    --azimuth-shadow: rgba(16, 42, 56, 0.10);
+    --azimuth-shadow-lg: rgba(16, 42, 56, 0.16);
+    --azimuth-danger: #A32718;
+    --azimuth-danger-contrast: #FFFFFF;
+    --azimuth-danger-ink: #A32718;
+    --azimuth-success: #2C6B33;
+    --azimuth-success-ink: #2C6B33;
+    --azimuth-warning-ink: #8F4E05;
+    /* A fill that has to carry white text *and* read as a hairline on the page.
+       PluginManager's orange is both at once — a 2px border on its install buttons
+       and the ground under white on its update badges — so one value has to clear
+       4.5:1 under white and 3:1 against the page. The window is narrow and it is
+       not the same window in the two themes; `contrast.mjs` holds both ends. */
+    --azimuth-attention: #8F4E05;
+    /* Icons that a stylesheet cannot recolour: PluginManager delivers 69 of them as
+       `content: url(data:image/svg+xml,…)` with the fills baked into the paths. A
+       replaced image inherits nothing, so the only lever left is a filter, and the
+       only way to make it follow the theme is to carry it in a token. */
+    --pm-icon-filter: none;
+
+    --azimuth-font-display: 'Spectral', Georgia, 'Times New Roman', serif;
+    --azimuth-font-body: 'Newsreader', Georgia, serif;
+    --azimuth-font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --radius-card: 16px;
+    --radius-panel: 20px;
+    --radius-shot: 12px;
+    --radius-pill: 100px;
+
+    /* Task colours: fill = card background, edge = the identifying bar,
+       chip/ink = the tag pill. Contrast of every pair is checked in
+       `contrast.mjs`; do not hand-edit one without rerunning it. */
+    --kb-red-fill: #fbd7d9;
+    --kb-red-edge: #a42830;
+    --kb-red-chip: #f6c3c7;
+    --kb-red-ink: #6d1a20;
+
+    --kb-cyan-fill: #d0f4fd;
+    --kb-cyan-edge: #1f8ca7;
+    --kb-cyan-chip: #c0eef9;
+    --kb-cyan-ink: #155f72;
+
+    --kb-orange-fill: #fdefd8;
+    --kb-orange-edge: #ac7920;
+    --kb-orange-chip: #f9e4c0;
+    --kb-orange-ink: #725015;
+
+    --kb-light-green-fill: #e4f9dd;
+    --kb-light-green-edge: #49942e;
+    --kb-light-green-chip: #d2f2c7;
+    --kb-light-green-ink: #336720;
+
+    --kb-grey-fill: #e9eaec;
+    --kb-grey-edge: #61666b;
+    --kb-grey-chip: #dbdddf;
+    --kb-grey-ink: #404447;
+
+    --kb-yellow-fill: #f9fbdd;
+    --kb-yellow-edge: #878e25;
+    --kb-yellow-chip: #f2f5c4;
+    --kb-yellow-ink: #666b1c;
+
+    --kb-blue-fill: #d8e6fc;
+    --kb-blue-edge: #2459a8;
+    --kb-blue-chip: #c2d7f7;
+    --kb-blue-ink: #183b6f;
+
+    --kb-green-fill: #d3fbe1;
+    --kb-green-edge: #22954c;
+    --kb-green-chip: #c2f7d6;
+    --kb-green-ink: #196e38;
+
+    --kb-purple-fill: #ecd5fa;
+    --kb-purple-edge: #762aa2;
+    --kb-purple-chip: #e3c4f5;
+    --kb-purple-ink: #4e1c6b;
+
+    --kb-brown-fill: #ece3de;
+    --kb-brown-edge: #7b6251;
+    --kb-brown-chip: #e5dbd4;
+    --kb-brown-ink: #524135;
+
+    --kb-deep-orange-fill: #fcdecf;
+    --kb-deep-orange-edge: #aa4f22;
+    --kb-deep-orange-chip: #f8d3c1;
+    --kb-deep-orange-ink: #713517;
+
+    --kb-dark-grey-fill: #dde7ee;
+    --kb-dark-grey-edge: #4d6a7f;
+    --kb-dark-grey-chip: #d2dee7;
+    --kb-dark-grey-ink: #334654;
+
+    --kb-pink-fill: #fcdaea;
+    --kb-pink-edge: #a82462;
+    --kb-pink-chip: #f7c2db;
+    --kb-pink-ink: #6f1841;
+
+    --kb-teal-fill: #dafcf7;
+    --kb-teal-edge: #209384;
+    --kb-teal-chip: #c2f7f0;
+    --kb-teal-ink: #186f64;
+
+    --kb-lime-fill: #ecf8d4;
+    --kb-lime-edge: #6d8e29;
+    --kb-lime-chip: #e4f4c6;
+    --kb-lime-ink: #50691e;
+
+    --kb-amber-fill: #fdf2cf;
+    --kb-amber-edge: #9c7e1b;
+    --kb-amber-chip: #faecbf;
+    --kb-amber-ink: #735d14;
+
+    /* ── Kanboard's own variables, restated ──
+       `--color-primary` is the one that mattered: at #a0a0a0 on a pastel card it
+       took the task tags down to about 1.8:1. It is body text now. */
+    --body-background-color: var(--azimuth-bg);
+    --header-background-color: var(--azimuth-bg);
+    --color-primary: var(--azimuth-text);
+    --color-light: var(--azimuth-mute);
+    --color-lighter: var(--azimuth-divider);
+    --color-dark: var(--azimuth-text);
+    --color-medium: var(--azimuth-text-2);
+    --color-error: var(--azimuth-danger-ink);
+
+    --link-color-primary: var(--azimuth-cyan-ink);
+    --link-color-focus: var(--azimuth-cyan-ink);
+    --link-color-hover: var(--azimuth-cyan-ink);
+
+    --alert-color-default: var(--azimuth-text);
+    --alert-background-color-default: var(--azimuth-surface-hi);
+    --alert-border-color-default: var(--azimuth-divider-strong);
+    --alert-color-success: var(--azimuth-success-ink);
+    --alert-background-color-success: #E4F3E6;
+    --alert-border-color-success: #A8CDAC;
+    --alert-color-error: var(--azimuth-danger-ink);
+    --alert-background-color-error: #FBE7E4;
+    --alert-border-color-error: #E1A99F;
+    --alert-color-info: var(--azimuth-cyan-ink);
+    --alert-background-color-info: var(--azimuth-surface-hi);
+    --alert-border-color-info: var(--azimuth-divider-strong);
+    --alert-color-normal: var(--azimuth-text);
+    --alert-background-color-normal: var(--azimuth-surface-hi);
+    --alert-border-color-normal: var(--azimuth-divider);
+
+    --button-default-color: var(--azimuth-cyan-ink);
+    --button-default-background-color: transparent;
+    --button-default-border-color: var(--azimuth-divider-strong);
+    --button-default-color-focus: var(--azimuth-cyan-ink);
+    --button-default-background-color-focus: var(--azimuth-surface-hi);
+    --button-default-border-color-focus: var(--azimuth-cyan-ink);
+    --button-primary-color: var(--azimuth-cyan-contrast);
+    --button-primary-background-color: var(--azimuth-cyan);
+    --button-primary-border-color: var(--azimuth-cyan-ink);
+    --button-primary-color-focus: var(--azimuth-cyan-contrast);
+    --button-primary-background-color-focus: var(--azimuth-cyan);
+    --button-primary-border-color-focus: var(--azimuth-cyan-ink);
+    --button-danger-color: var(--azimuth-danger-contrast);
+    --button-danger-background-color: var(--azimuth-danger);
+    --button-danger-border-color: var(--azimuth-danger);
+    --button-danger-color-focus: var(--azimuth-danger-contrast);
+    --button-danger-background-color-focus: var(--azimuth-danger);
+    --button-danger-border-color-focus: var(--azimuth-danger);
+    --button-disabled-color: var(--azimuth-mute);
+    --button-disabled-background-color: var(--azimuth-surface-hi);
+    --button-disabled-border-color: var(--azimuth-divider);
+
+    --table-header-background-color: var(--azimuth-surface-hi);
+    --table-nth-background-color: var(--azimuth-surface);
+    --table-border-color: var(--azimuth-divider);
+    --table-list-header-border-color: var(--azimuth-divider);
+    --table-list-header-background-color: var(--azimuth-surface-hi);
+    --table-list-nth-background-color: var(--azimuth-surface);
+    --table-list-border-color: var(--azimuth-divider);
+    --table-list-row-hover-border-color: var(--azimuth-divider-strong);
+    --table-list-row-background-color: var(--azimuth-surface-hi);
+
+    --avatar-color-letter: #FFFFFF;
+    --activity-title-color: var(--azimuth-text);
+    --activity-title-border-color: var(--azimuth-divider);
+    --activity-event-background-color: var(--azimuth-surface);
+    --activity-event-hover-color: var(--azimuth-surface-hi);
+    --user-mention-color: var(--azimuth-cyan-ink);
+    --board-task-limit-color: var(--azimuth-danger-ink);
+
+    --sidebar-border-color: var(--azimuth-divider);
+    --dropdown-background-color: var(--azimuth-surface);
+    --dropdown-border-color: var(--azimuth-divider);
+    --dropdown-li-border-color: var(--azimuth-divider);
+
+    --input-addon-background-color: var(--azimuth-surface-hi);
+    --input-addon-color: var(--azimuth-text-2);
+    --input-background-color: var(--azimuth-surface);
+    --input-border-color: var(--azimuth-divider-strong);
+    --input-placeholder-color: var(--azimuth-mute);
+    --input-focus-color: var(--azimuth-text);
+    --input-focus-border-color: var(--azimuth-cyan-ink);
+    --input-focus-shadow-color: transparent;
+
+    --views-background-color: var(--azimuth-surface);
+    --views-border-color: var(--azimuth-divider-strong);
+    --views-active-color: var(--azimuth-cyan-contrast);
+
+    --tooltip-background-color: var(--azimuth-surface);
+    --tooltip-border-color: var(--azimuth-divider-strong);
+    --tooltip-shadow-color: var(--azimuth-shadow-lg);
+    --panel-background-color: var(--azimuth-surface);
+    --panel-border-color: var(--azimuth-divider);
+
+    --draggable-item-selected-background-color: var(--azimuth-surface-hi);
+    --draggable-item-selected-border-color: var(--azimuth-cyan-ink);
+    --draggable-item-hover-background-color: var(--azimuth-surface-hi);
+    --draggable-row-handle-color: var(--azimuth-mute);
+    --draggable-placeholder-background-color: var(--azimuth-surface-hi);
+    --draggable-placeholder-border-color: var(--azimuth-cyan-ink);
+
+    --task-list-icons-color: var(--azimuth-mute);
+    --form-help-color: var(--azimuth-text-2);
+    --form-error-color: var(--azimuth-danger-ink);
+    --comment-title-border-color: var(--azimuth-divider);
+    --comment-nth-background-color: var(--azimuth-surface);
+    --comment-highlighted-background-color: var(--azimuth-surface-hi);
+    --comment-highlighted-hover-background-color: var(--azimuth-surface-hi);
+    --comment-highlighted-border-color: var(--azimuth-cyan-ink);
+}

@@ -10,10 +10,11 @@ use Kanboard\Core\Translator;
  *
  * Two stylesheets are attached, and the split is not cosmetic:
  *
- * - `skin.css` carries the whole design (structure, radii, fonts) plus the light
- *   palette, and is attached to `template:layout:css`. Kanboard renders that hook
+ * - Nine sheets carry the whole design (structure, radii, fonts) plus the light
+ *   palette, and are attached to `template:layout:css`. Kanboard renders that hook
  *   after its own theme sheet, so every declaration lands on top without a
- *   specificity fight.
+ *   specificity fight — and renders the listeners in the order they were
+ *   registered, which is why that order is spelled out and commented below.
  * - `theme-dark.css` only redefines the colour tokens, and is attached to
  *   `template:layout:head` because that hook is rendered by a template, which is
  *   the only place where the user's chosen theme can be read.
@@ -34,7 +35,27 @@ class Plugin extends Base
 {
     public function initialize()
     {
-        $this->hook->on('template:layout:css', array('template' => 'plugins/AzimuthSkin/Assets/skin.css'));
+        // The order of these nine lines *is* the cascade. Several rules in this skin
+        // win nothing but a tie on document order — the phone media query over the
+        // tablet one, `:root:root` over PluginManager's named rules, the segmented
+        // control over Kanboard's stacked tabs. The sheets are contiguous slices of
+        // what used to be one file, cut at section boundaries and never reordered,
+        // so concatenating them in this order reproduces that file byte for byte.
+        // Reorder a line here and you change which rule wins, silently.
+        foreach (array(
+            'tokens',         // the palette, and Kanboard's own variables restated
+            'base',           // body, headings, focus, scrollbars
+            'chrome',         // application header, project header, project selector
+            'board',          // board, cards, tags
+            'task',           // task detail, prose, the pinned toolbar, list view
+            'controls',       // forms, buttons, the tag field, menus, modals, avatars
+            'colours',        // the colours Kanboard writes literally, task colours
+            'narrow',         // every media query, last so it overrides all of them
+            'plugin-manager', // compatibility with the PluginManager plugin
+        ) as $sheet) {
+            $this->hook->on('template:layout:css', array('template' => 'plugins/AzimuthSkin/Assets/'.$sheet.'.css'));
+        }
+
         $this->hook->on('template:layout:js', array('template' => 'plugins/AzimuthSkin/Assets/skin.js'));
         $this->template->hook->attach('template:layout:head', 'AzimuthSkin:layout/head');
     }
