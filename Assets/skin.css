@@ -2047,10 +2047,20 @@ td[class*="color-"] {
         min-width: 0;
     }
 
+    /* Block and not flex, and the height comes from `line-height`: `text-overflow`
+       has nothing to bite on inside a flex container, where the label is an
+       anonymous item rather than a line of text. Same 40-point target, and a
+       label that runs out of room now says so with an ellipsis instead of being
+       cut mid-word. */
     .views li a {
-        padding-left: 8px;
-        padding-right: 8px;
+        display: block;
+        min-height: 0;
+        padding: 0 8px;
+        line-height: 40px;
+        text-align: center;
+        white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
