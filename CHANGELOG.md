@@ -15,7 +15,49 @@
   prints: a stylesheet has no words of its own. `plugins.json`, which feeds the directory on
   kanboard.org, is a static file in someone else's repository and stays English.
 - The same short description still has to reach `plugins.json`, which means a pull request on
-  `kanboard/website`. It will travel with the release, so that only one is opened there.
+  `kanboard/website`. Not opened yet, on purpose.
+
+### Narrow screens
+
+- The board's own mobile rule had never once applied. This block asked for `width: 240px` on a
+  bare `#board th.board-column-header`, which the skin's own base rule beat on specificity —
+  (1,3,1) against (1,1,1), because of the two `:not()` that were added to beat Kanboard. Columns
+  stayed 268px wide on a phone and 1.27 of one fitted on screen. They are `86vw` now, one at a
+  time, and the container snaps to them — `proximity` rather than `mandatory`, so a card being
+  dragged towards the next column does not fight the snap.
+- Tables written in a description or a comment were **cut**, not scrolled. Kanboard sets
+  `overflow-x: hidden` on the body, so anything wider than its column is simply unreachable:
+  measured at 390 points, a task page was 457 wide, 67 of them past the edge with no way to get
+  there. Kanboard's own `table.table-scrolling` only reaches the tables it puts that class on, and
+  Markdown's do not carry it.
+- The controls that are the only way into an action — a column's menu, a card's menu, the add
+  button, the view tabs — were 15 points tall. They are 40 now. The icons in a card's footer are
+  deliberately left alone: 25 points on every card costs more than it returns on a phone.
+- The header no longer floors its title and project selector at 300 points each, which was making
+  the shell take 21% of a 390-point screen before the first card.
+- The override of Kanboard's stacked view tabs is now written down as an override. It was already
+  there, winning a specificity tie on load order alone, and an override nobody wrote down is
+  indistinguishable from a bug.
+
+### PluginManager, third pass
+
+- Its icons are 69 images delivered as `content: url("data:image/svg+xml,…")` with the fills baked
+  into the paths — `fill='currentColor'` on the root does nothing, a replaced image inherits no
+  colour. No custom property describes them, so no remap reaches them. Measured on the rendered
+  pixels, over 40 of them: a median of 2.75:1 against the dark page, a minimum of 1.15:1, and 23
+  below the 3:1 non-text line — one of them the Plugins entry of the user menu, plain black. A
+  filter carried by a token takes them to a median of 8.67:1, a minimum of 5.40:1, and none below
+  the line. The measurement matters as much as the fix: the elements' own `color` and `border` all
+  passed while the images did not, and only sampling pixels showed it.
+- Its page titles, its sidebar hover and its active count were `#B71234` — 2.75:1 on the dark page,
+  against the 4.5:1 AA asks of body text. They take the danger ink.
+- Its install button carried a 2px `#FF6500` border and a 3px radius, 141 times on the directory
+  page alone. Not a contrast failure; a shape that belonged to another interface.
+- The manual-plugins page was framed in `#D50000` twelve times over — the fieldset, the URL field,
+  every edge of the table. Both that token and the orange are double-edged in the way `--pp-white`
+  was in 1.0.2: remapped for the role they mostly play, then taken by name where they are a fill
+  under white text.
+- Each sidebar entry carried `border-left: 5px solid white`, a hard white rule down a dark page.
 
 ## 1.0.3
 

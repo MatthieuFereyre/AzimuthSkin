@@ -38,6 +38,11 @@
     --azimuth-success: #2F6F36;
     --azimuth-success-ink: #8CCB93;
     --azimuth-warning-ink: #EDA262;
+    /* Lighter than the light palette's, and deliberately: this one has to clear
+       3:1 as a hairline against a near-black page while still carrying white
+       text at 4.5:1. The two demands pull in opposite directions and the window
+       between them is about two notches wide. */
+    --azimuth-attention: #A35C08;
 
     /* Alerts keep their meaning but sit on dark surfaces; the borders are what
        tells them apart at a glance, the fills stay quiet. */
@@ -131,4 +136,14 @@
    turns over: white on a dark modal, a lighter scrim on the letter avatars. */
 .avatar-letter {
     background-image: linear-gradient(rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.34));
+}
+
+/* PluginManager's icons are images with their colours baked in, so the palette
+   cannot reach them; a filter can. Inverting and turning the hue back through 180
+   degrees lifts the dark fills off the dark page while leaving each icon roughly
+   its own hue — the green stays green, the red stays red. It is a blunt tool, and
+   it is the only one that reaches a replaced image. Nothing in the light palette
+   needs it, which is why the token is `none` there. */
+:root {
+    --pm-icon-filter: invert(1) hue-rotate(180deg);
 }

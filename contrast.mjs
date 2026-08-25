@@ -103,6 +103,19 @@ for (const [theme, t] of [['light', light], ['dark', dark]]) {
   // The cross that drops a tag from the task form, hovered. Its resting colour is
   // `--azimuth-mute` on the same chip, checked in the surface loop above.
   check(theme, t, 'tag remove cross, hovered', '--azimuth-danger-ink', '--azimuth-surface-hi', 4.5);
+  // `--azimuth-attention` stands in for PluginManager's orange, which is a fill
+  // under white text in four places and a 2px border in three others. Both ends
+  // have to hold at once, and they pull apart: the fill wants to be dark enough
+  // for white, the hairline light enough to be seen on a near-black page. That is
+  // why the two palettes do not carry the same value.
+  check(theme, t, 'white on the attention fill', '#FFFFFF', '--azimuth-attention', 4.5);
+  check(theme, t, 'attention as a hairline on the page', '--azimuth-attention', '--azimuth-bg', 3);
+  check(theme, t, 'attention as a hairline on a surface', '--azimuth-attention', '--azimuth-surface', 3);
+  // PluginManager paints its page titles, its sidebar hover and its active count
+  // in #B71234, which is 2.75:1 on the dark page. They take the danger ink now,
+  // and it is body text, so the text threshold applies.
+  check(theme, t, 'PluginManager ink on the page', '--azimuth-danger-ink', '--azimuth-bg', 4.5);
+  check(theme, t, 'white on its count badges', '--azimuth-danger-contrast', '--azimuth-danger', 4.5);
   check(theme, t, 'table header inside a callout', '--azimuth-cyan-ink', '--azimuth-tint', 4.5);
   // The scrollbar has to stay quiet without becoming invisible: non-text
   // threshold, on both grounds it sits on.

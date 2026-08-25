@@ -85,6 +85,17 @@
     --azimuth-success: #2C6B33;
     --azimuth-success-ink: #2C6B33;
     --azimuth-warning-ink: #8F4E05;
+    /* A fill that has to carry white text *and* read as a hairline on the page.
+       PluginManager's orange is both at once — a 2px border on its install buttons
+       and the ground under white on its update badges — so one value has to clear
+       4.5:1 under white and 3:1 against the page. The window is narrow and it is
+       not the same window in the two themes; `contrast.mjs` holds both ends. */
+    --azimuth-attention: #8F4E05;
+    /* Icons that a stylesheet cannot recolour: PluginManager delivers 69 of them as
+       `content: url(data:image/svg+xml,…)` with the fills baked into the paths. A
+       replaced image inherits nothing, so the only lever left is a filter, and the
+       only way to make it follow the theme is to carry it in a token. */
+    --pm-icon-filter: none;
 
     --azimuth-font-display: 'Spectral', Georgia, 'Times New Roman', serif;
     --azimuth-font-body: 'Newsreader', Georgia, serif;
@@ -1176,7 +1187,21 @@ span.task-icon-age-column {
     background-image: linear-gradient(90deg, var(--azimuth-cyan-ink), transparent 62%);
 }
 
+/* `display: block` is what makes a table scrollable — the rows inside still form
+   a table through anonymous boxes. Without it a table wider than its column is not
+   scrolled but *cut*: Kanboard sets `overflow-x: hidden` on the body, so the part
+   past the edge cannot be reached at all. Measured on a task page at 390 points,
+   457 of document for 390 of viewport, 67 of them unreachable — a contrast table
+   in a comment, three columns of which the last was simply gone.
+
+   Kanboard has a fix of its own, `table.table-scrolling`, but it only reaches the
+   tables it puts that class on, and the ones Markdown produces do not carry it.
+   Scoped to prose: the board is a `<table>` too, and must not be touched. */
 .markdown table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
     margin-bottom: 16px;
     font-size: 0.94em;
 }
@@ -1788,7 +1813,11 @@ td[class*="color-"] {
     border-color: var(--edge);
 }
 
-/* ── Narrow screens ──────────────────────────────────────────────────── */
+/* ── Narrow screens ──────────────────────────────────────────────────────
+   Measured on the real instance at 390 points rather than by resizing a window,
+   which Chrome ignores when the window is maximised: the page is fetched with the
+   session, given a `<base>`, and re-hosted in an iframe of the target width, so
+   the media queries evaluate against a phone. */
 @media (max-width: 768px) {
     .page {
         margin-left: 10px;
@@ -1799,17 +1828,65 @@ td[class*="color-"] {
         padding: 8px 10px;
     }
 
+    /* Kanboard floors the title and the project selector at 300 points each, so on
+       a 390-point phone they take a row apiece and the shell costs 21% of the
+       screen before a single card. The row wraps on its own; it needs no floor. */
+    header .title-container,
+    header .board-selector-container {
+        min-width: 0;
+    }
+
     #board {
         border-spacing: 8px 0;
         margin-left: -8px;
         margin-right: -8px;
     }
 
+    /* The two `:not()` are load-bearing, and this is the rule that proves it.
+       Until now this block asked for `width: 240px` on a bare
+       `#board th.board-column-header` — which the skin's *own* base rule beat on
+       specificity, (1,3,1) against (1,1,1). The declaration had never once
+       applied: columns stayed 268 points wide on a phone, and 1.27 of one fitted
+       on screen. A rule that loses to its own stylesheet is worse than no rule,
+       because it reads as handled. */
+    #board th.board-column-header:not(.board-column-header-collapsed):not(.board-column-compact) {
+        width: 86vw;
+    }
+
     #board th.board-column-header {
-        width: 240px;
         padding: 10px 12px 8px;
     }
 
+    /* One column at a time, with a sliver of the next left showing so the board
+       still says it continues. `proximity` rather than `mandatory`: dragging a
+       card towards a neighbouring column scrolls this container, and a mandatory
+       snap fights the drag. */
+    #board-container {
+        scroll-snap-type: x proximity;
+        scroll-padding-left: 8px;
+    }
+
+    #board th.board-column-header,
+    #board td[class*="board-column-"] {
+        scroll-snap-align: start;
+    }
+
+    /* Fifteen points tall, and the only way into half of what a column or a card
+       can do. The hit area grows; nothing moves. The icons in a card's footer are
+       deliberately left out — twenty-five points added to every card costs more
+       than it returns on the one screen where vertical space is the scarce thing. */
+    .board-column-title a.dropdown-menu,
+    .task-board-header a.dropdown-menu,
+    .board-add-icon a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+    }
+
+    /* Kanboard stacks the view tabs into full-width blocks under 560 points. One
+       row of three or four reads better on a phone and costs three lines less, so
+       this overrides it — on purpose, by load order, and said out loud here
+       because an override that nobody wrote down is indistinguishable from a bug. */
     .views {
         display: flex;
         width: 100%;
@@ -1818,6 +1895,13 @@ td[class*="color-"] {
     .views li {
         flex: 1;
         justify-content: center;
+    }
+
+    .views li a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
     }
 }
 
@@ -1851,6 +1935,23 @@ td[class*="color-"] {
        on it, and would have on the stock theme too. The colour of the action,
        with the ink that goes with it. */
     --button-background-delete: var(--azimuth-danger);
+
+    /* Third pass. Two more of its tokens are painted over the theme, and both are
+       double-edged in the same way `--pp-white` was: remapped for the role they
+       mostly play, then taken by name below where they play the other one.
+
+       `--pp-orange` is a 2px border on 141 install buttons on the directory page
+       alone, and the fill under white text on four update badges. `--pp-red-alt-3`
+       frames the manual-plugins page twelve times over and fills two count badges.
+       The reds that are only ever ink — page titles, the sidebar's hover, the
+       active count — were the plainest failure of the three: #B71234 on the dark
+       page is 2.75:1, where AA asks 4.5:1 of body text. */
+    --pp-orange: var(--azimuth-attention);
+    --pp-orangered: var(--azimuth-divider-strong);
+    --pp-red: var(--azimuth-danger-ink);
+    --pp-red-alt: var(--azimuth-danger-ink);
+    --pp-red-alt-2: var(--azimuth-danger-ink);
+    --pp-red-alt-3: var(--azimuth-divider);
 }
 
 /* `--pp-white` cannot be remapped — it is white text on coloured fills fourteen
@@ -1864,6 +1965,60 @@ td[class*="color-"] {
 .btn-uninstall a,
 .btn-uninstall a i {
     color: var(--azimuth-danger-contrast);
+}
+
+/* The other half of the two remaps above: where `--pp-orange` and `--pp-red-alt-3`
+   are a *fill* under white text, a hairline colour would have made them
+   unreadable. These keep a real ground, and the ink that goes with it. */
+.manual-plugin-count,
+span.count-menu-item.badge-manual {
+    background-color: var(--azimuth-danger);
+    border-color: var(--azimuth-danger);
+}
+
+/* Its buttons: the shape of every other button here, and the padding that shape
+   needs. The colour is already carried by the tokens. */
+.install-plugin,
+a.download-archive,
+a.update-plugin,
+td button.btn-update {
+    border-radius: var(--radius-pill);
+    padding: 4px 14px;
+}
+
+/* Each sidebar entry carried `border-left: 5px solid white` — a hard white rule
+   down the left of a dark page, five times over. The active one takes the accent
+   instead of the page's own ink, so the marker says which, not merely that. */
+#PluginSideBar > ul li {
+    border-left-color: var(--azimuth-divider);
+}
+
+#PluginSideBar > ul li.active {
+    border-left-color: var(--azimuth-cyan-ink);
+}
+
+/* ── Its icons ──
+   Sixty-nine of them, delivered as `content: url("data:image/svg+xml,…")`. The
+   root of each SVG says `fill='currentColor'`, which does nothing: an image
+   loaded through `content` is a replaced element and inherits no colour from the
+   page. The paths inside carry hard hex fills — #4D4D4D twenty-four times over,
+   at 2.17:1 on the dark page, and one plain #000000 at 1.15:1, which is the
+   Plugins entry of the user menu.
+
+   No custom property describes any of this, so no remap can reach it. What is
+   left is a filter, carried by a token so it can differ between the palettes.
+   Measured on the rendered pixels rather than on the declarations — the mistake
+   worth not repeating here is that the elements' own `color` and `border` all
+   passed while the images did not. */
+[class*="pm-"][class*="-icon"],
+i.fa-cubes::before,
+.age-warning::before,
+.age-danger::before,
+.install-date::before,
+.install-plugin i.fa-cloud-download::before,
+.update-plugin i.fa-refresh::before,
+.plugin-type-count-icon i.fa-refresh::before {
+    filter: var(--pm-icon-filter);
 }
 
 /* Its message boxes are painted #EEEEEE whatever the theme, and take the text
