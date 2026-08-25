@@ -471,10 +471,15 @@ header .title a {
     border-radius: var(--radius-pill);
 }
 
+/* A segmented control: the container carries the shape and clips it, the segments
+   sit flush inside it. `border-radius: 0` is not redundant — Kanboard rounds each
+   tab by 5 points under 560, from when they were stacked blocks, and a rounded
+   rectangle floating inside a half-circle end reads as two ideas at once. */
 .views li {
     display: flex;
     padding: 0;
     border: none;
+    border-radius: 0;
     background: var(--azimuth-surface);
 }
 
