@@ -1850,7 +1850,11 @@ td[class*="color-"] {
        on screen. A rule that loses to its own stylesheet is worse than no rule,
        because it reads as handled. */
     #board th.board-column-header:not(.board-column-header-collapsed):not(.board-column-compact) {
-        width: 86vw;
+        /* Bounded, because this query reaches 768 points and a plain `86vw` there
+           would make one column 684 wide — right for a phone, absurd for a small
+           tablet, which has room for two and a half. 275 points at 320, 335 at 390,
+           300 at 768. */
+        width: min(86vw, 300px);
     }
 
     /* The menu inside now carries the height, so the padding that used to provide
