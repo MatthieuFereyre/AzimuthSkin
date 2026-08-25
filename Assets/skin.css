@@ -1308,6 +1308,12 @@ input[type="password"],
 input[type="text"]:not(.input-addon-field),
 textarea,
 select {
+    /* `border-box` so a width, wherever it comes from, is the width the field
+       actually occupies. Kanboard sizes its comment box in absolute points, and in
+       `content-box` the padding and the border are added on top: it overshot a
+       phone page by four points, which is enough to make the whole page drift
+       sideways under a thumb. */
+    box-sizing: border-box;
     color: var(--azimuth-text);
     background-color: var(--azimuth-surface);
     border: 1px solid var(--azimuth-divider-strong);
@@ -1855,7 +1861,8 @@ td[class*="color-"] {
     }
 
     /* Kanboard sizes the comment box in absolute points, which is wider than the
-       page once the page is a phone. */
+       page once the page is a phone. Paired with the `border-box` above, this is
+       what actually holds it inside. */
     textarea {
         max-width: 100%;
     }
