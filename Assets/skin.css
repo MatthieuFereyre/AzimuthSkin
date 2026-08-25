@@ -483,13 +483,21 @@ header .title a {
     background: var(--azimuth-surface);
 }
 
-/* Kanboard rounds the two end segments through `:first-child` / `:last-child`,
-   which outranks the rule above. The container's `overflow: hidden` hides the
-   result today, so this changes nothing on screen — it keeps the segments honest
-   for the day the clipping is not there to cover for them. */
-.views li:first-child,
+/* The two end segments carry the container's own curve, and squaring them off was
+   wrong. Clipping alone does not make a square fill meet a round rim: the child is
+   clipped at the padding box while the border is painted outside it, so along the
+   curve a hairline of page background shows between the fill and the rim. Give the
+   fill the same radius and the two curves coincide. This also shapes the active
+   segment's inset rim, which was being clipped square against a round end.
+
+   These override Kanboard's own `:first-child` / `:last-child`, which round them
+   by 5 points — the value that made a rounded rectangle float inside a pill. */
+.views li:first-child {
+    border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+}
+
 .views li:last-child {
-    border-radius: 0;
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
 }
 
 .views li a {
