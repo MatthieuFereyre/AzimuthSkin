@@ -483,6 +483,15 @@ header .title a {
     background: var(--azimuth-surface);
 }
 
+/* Kanboard rounds the two end segments through `:first-child` / `:last-child`,
+   which outranks the rule above. The container's `overflow: hidden` hides the
+   result today, so this changes nothing on screen — it keeps the segments honest
+   for the day the clipping is not there to cover for them. */
+.views li:first-child,
+.views li:last-child {
+    border-radius: 0;
+}
+
 .views li a {
     padding: 6px 16px;
     color: var(--azimuth-text-2);
