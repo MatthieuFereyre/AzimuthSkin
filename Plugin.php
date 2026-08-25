@@ -51,7 +51,10 @@ class Plugin extends Base
             'controls',       // forms, buttons, the tag field, menus, modals, avatars
             'colours',        // the colours Kanboard writes literally, task colours
             'narrow',         // every media query, last so it overrides all of them
-            'plugin-manager', // compatibility with the PluginManager plugin
+            // Not `plugin-manager.css`: PluginManager's own sheet is called exactly
+            // that, and two files of the same name in a browser's tooling is a way to
+            // spend an afternoon reading the wrong one.
+            'compat-plugin-manager',
         ) as $sheet) {
             $this->hook->on('template:layout:css', array('template' => 'plugins/AzimuthSkin/Assets/'.$sheet.'.css'));
         }

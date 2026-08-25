@@ -16,7 +16,7 @@
 
    ── The order of the sheets is the cascade ──
    tokens · base · chrome · board · task · controls · colours · narrow ·
-   plugin-manager, registered in that order in `Plugin.php`. They are contiguous
+   compat-plugin-manager, registered in that order in `Plugin.php`. They are contiguous
    slices of what used to be a single `skin.css`, cut at section boundaries and
    never reordered: concatenating them in that order reproduces that file byte
    for byte. Several rules here win on nothing but document order — the phone

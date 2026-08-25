@@ -6,7 +6,7 @@
 
 - `skin.css` had reached 2 116 lines across twenty-five sections, and its zones had stopped having
   much to say to each other. It is now nine sheets — tokens, base, chrome, board, task, controls,
-  colours, narrow, plugin-manager — registered in that order in `Plugin.php`, because
+  colours, narrow, compat-plugin-manager — registered in that order in `Plugin.php`, because
   `Hook::on()` appends and Kanboard renders the listeners in registration order.
 - They are **contiguous slices**, cut at section boundaries and never reordered. That is the whole
   point: several rules here win on nothing but document order — the phone media query over the
