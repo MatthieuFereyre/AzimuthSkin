@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.3
+
+- The tags of the task form were two empty boxes in the dark theme. Kanboard runs one Select2 in
+  the whole application, on that field, and Select2's own sheet paints the chip `#e4e4e4` without
+  ever stating a text colour — so the label took the page's ink, at 1.02:1 under this skin and
+  2.06:1 under Kanboard's stock dark theme, which does not mention Select2 either. The chip is now
+  the pill of the board tags, at 15.4:1 in light and 12.2:1 in dark, and its cross clears AA
+  instead of sitting at 2.2:1.
+- The suggestion list had the same fault, opening on a hard `white` with no ink of its own. It is
+  the skin's menu now, and the line under the cursor takes the accent the other menus use.
+- The field also fits a phone: Select2 copies `.tag-autocomplete`'s 400 pixels onto the container
+  as an inline width, and `.form-column`, being a flex item, would not shrink under it — the whole
+  form scrolled sideways. The chips wrap rather than being clipped.
+
 ## 1.0.2
 
 - PluginManager, second pass: the author cell of both plugin tables is painted white whatever the

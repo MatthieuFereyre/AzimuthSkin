@@ -100,6 +100,9 @@ for (const [theme, t] of [['light', light], ['dark', dark]]) {
   check(theme, t, 'subheading on the surface', '--azimuth-heading-2', '--azimuth-surface', 4.5);
   check(theme, t, 'inline code in its pill', '--azimuth-code', '--azimuth-surface-hi', 4.5);
   check(theme, t, 'text inside a callout', '--azimuth-text', '--azimuth-tint', 4.5);
+  // The cross that drops a tag from the task form, hovered. Its resting colour is
+  // `--azimuth-mute` on the same chip, checked in the surface loop above.
+  check(theme, t, 'tag remove cross, hovered', '--azimuth-danger-ink', '--azimuth-surface-hi', 4.5);
   check(theme, t, 'table header inside a callout', '--azimuth-cyan-ink', '--azimuth-tint', 4.5);
   // The scrollbar has to stay quiet without becoming invisible: non-text
   // threshold, on both grounds it sits on.

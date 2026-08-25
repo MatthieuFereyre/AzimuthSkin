@@ -1338,6 +1338,165 @@ label {
     text-decoration: none;
 }
 
+/* ── The tag field ───────────────────────────────────────────────────────
+   Kanboard runs exactly one Select2 in the whole application, on the tags of the
+   task form: `$('.tag-autocomplete').select2({tags: true})`. Select2 4.0.13
+   ships its own sheet in `vendor.min.css`, and that sheet paints the chip a flat
+   `#e4e4e4` without ever stating a text colour — so the label inside takes the
+   page's ink. On the dark theme that is light text on a light chip: two empty
+   boxes, and no way to tell which one a cross would remove. The cross itself
+   reads only because Select2 does colour it, at `#999` — 2.2:1, and the reason
+   the fault looked like a missing label rather than a missing pill.
+
+   The same holds for the suggestion list, which Select2 opens on `white` with no
+   colour of its own, and which Select2 appends to `<body>` — outside the form,
+   hence selectors that cannot be scoped to the field.
+
+   The fault is Select2's, not this skin's: Kanboard's `dark.min.css` does not
+   mention Select2 once, and the stock dark theme reads its own tags at 2.06:1,
+   already under the AA line. This skin's ink is lighter, so the same rule took
+   it the rest of the way down, to 1.02:1.
+
+   Every selector below repeats Select2's own, character for character. They tie
+   on specificity and this sheet is served after `vendor.min.css`, so order alone
+   decides — no `!important`, and no arms race if Select2 is ever updated. */
+.select2-container {
+    /* Kanboard sets `.tag-autocomplete { width: 400px }`, and Select2 copies the
+       resolved width onto the container as an inline style. Below 400px that
+       inline width is what pushes the form off screen. */
+    max-width: 100%;
+}
+
+/* And the clamp above needs somewhere to clamp to. `.form-column` is a flex item,
+   so its `min-width` is `auto` — it refuses to shrink under the widest thing it
+   holds, which on the task form is the 400 pixels of the tag field. The column
+   then stays 400 wide inside a 320-wide phone and the whole form scrolls
+   sideways. This is the one declaration here that is not about the tag field
+   itself, and it is the one that makes the field fit. */
+.form-columns .form-column {
+    min-width: 0;
+}
+
+.select2-container--default .select2-selection--multiple {
+    min-height: 34px;
+    background-color: var(--azimuth-surface);
+    border: 1px solid var(--azimuth-divider-strong);
+    border-radius: var(--radius-shot);
+    color: var(--azimuth-text);
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border: 1px solid var(--azimuth-cyan-ink);
+    outline: 2px solid var(--azimuth-cyan-ink);
+    outline-offset: 2px;
+}
+
+/* Select2 rounds only the edge away from the open list. The field keeps its own
+   shape instead: the list below is a detached card, as everywhere else here. */
+.select2-container--default.select2-container--open.select2-container--above .select2-selection--multiple,
+.select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+    border-radius: var(--radius-shot);
+}
+
+.select2-container--default.select2-container--disabled .select2-selection--multiple {
+    background-color: var(--azimuth-surface-hi);
+    color: var(--azimuth-mute);
+}
+
+/* Floats and `white-space: nowrap`, in a box 400 pixels wide: past three or four
+   tags the row is clipped rather than wrapped. Same flex row as `.task-tags ul`. */
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    white-space: normal;
+}
+
+/* The pill of `.task-tags li`, in the form. It carries no task colour here —
+   there is no card around it to take one from — so it falls back to the same
+   pair that pill falls back to. */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    float: none;
+    margin: 0;
+    padding: 2px 10px;
+    border: 1px solid var(--azimuth-divider-strong);
+    border-radius: var(--radius-pill);
+    background-color: var(--azimuth-surface-hi);
+    color: var(--azimuth-text);
+    font-size: 0.85em;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    margin-right: 0;
+    color: var(--azimuth-mute);
+    font-size: 1.15em;
+    line-height: 1;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: var(--azimuth-danger-ink);
+}
+
+/* Typed text sits inside the box and takes the box's ink. The ring belongs to the
+   whole field, not to the sliver of an input that grows with what is typed, so
+   the base rule for `input:focus` is undone here. */
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-top: 0;
+    color: var(--azimuth-text);
+    font-family: var(--azimuth-font-ui);
+    font-size: 0.95em;
+}
+
+.select2-container--default .select2-search--inline .select2-search__field:focus {
+    outline: none;
+}
+
+/* ── The suggestion list ── */
+.select2-dropdown {
+    background-color: var(--azimuth-surface);
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-card);
+    box-shadow: 0 12px 28px var(--azimuth-shadow-lg);
+    overflow: hidden;
+    color: var(--azimuth-text);
+}
+
+/* Select2 squares off the corner facing the field and drops that border; both are
+   restated here, on the two selectors that set them. */
+.select2-container--open .select2-dropdown--above,
+.select2-container--open .select2-dropdown--below {
+    border: 1px solid var(--azimuth-divider);
+    border-radius: var(--radius-card);
+}
+
+.select2-container--default .select2-results__option {
+    padding: 6px 12px;
+    color: var(--azimuth-text);
+}
+
+/* A tag already on the task: still listed, no longer a choice. */
+.select2-container--default .select2-results__option[aria-selected="true"] {
+    background-color: var(--azimuth-surface-hi);
+    color: var(--azimuth-text-2);
+}
+
+.select2-container--default .select2-results__option[aria-disabled="true"] {
+    color: var(--azimuth-mute);
+}
+
+/* The same accent the other menus mark their active line with. */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--azimuth-cyan);
+    color: var(--azimuth-cyan-contrast);
+}
+
 /* ── Dropdowns, modals, tooltips ─────────────────────────────────────── */
 ul.dropdown-submenu-open {
     padding: 6px;
