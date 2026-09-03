@@ -18,9 +18,11 @@ use Kanboard\Core\Translator;
  * - `theme-dark.css` only redefines the colour tokens, and is attached to
  *   `template:layout:head` because that hook is rendered by a template, which is
  *   the only place where the user's chosen theme can be read.
- * - `skin.js` does one thing the stylesheet cannot: it gives the project
+ * - `skin.js` does the two things the stylesheet cannot: it gives the project
  *   overview a single element to scroll, so its toolbar can leave the scroller
- *   like everywhere else. See the file for why it is not a template override.
+ *   like everywhere else, and it makes Escape leave a task the way it leaves a
+ *   dialog. See the file for why neither is a template override, and why the
+ *   second one cannot go through Kanboard's own keyboard shortcuts.
  *
  * Nothing in the served HTML says which theme is active: light and dark differ by
  * the href of one stylesheet and by nothing else, so plain CSS cannot branch on it.
@@ -94,7 +96,7 @@ class Plugin extends Base
 
     public function getPluginVersion()
     {
-        return '1.0.4';
+        return '1.0.5';
     }
 
     public function getPluginHomepage()

@@ -116,7 +116,7 @@ forty colours Kanboard writes literally, and the sixteen task colours it prints 
 |---|---|
 | `Assets/skin.css` | the whole design, plus the light palette |
 | `Assets/theme-dark.css` | the dark palette, tokens only |
-| `Assets/skin.js` | one thing only: gives the project overview a single element to scroll |
+| `Assets/skin.js` | the project overview's scroller, and Escape leaving a task |
 | `Template/layout/head.php` | adds the dark palette when the profile asks for it |
 | `contrast.mjs` | the contrast guard |
 

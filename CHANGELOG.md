@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.0.5
+
+### Escape leaves a task
+
+A task is a full page in Kanboard, not a dialog, so **Escape did nothing at all** on it —
+while everywhere else in the interface, and in every other tracker, it is the key that gets
+you out of what you opened. It now goes back where you came from: the board, or the list, at
+the scroll position you left it. A task reached in a fresh tab — from an e-mail, a commit
+message, a notification — has nowhere to go back to, and falls to its project's board.
+
+It stays out of the way of everything Escape already does: a dialog, an action menu, a
+completion popup, or a field being typed in keeps the key. The comment box is why the last
+one matters — it sits in the page itself, not in a dialog, and leaving would throw away what
+was being written.
+
+It could not be written as one more of Kanboard's own shortcuts, and both reasons are silent
+ones: the dispatcher stops at the **first** listener that matches a key, so a second `Escape`
+is stored and never called; and that first listener closes the modal box on the very same
+event, so anything running after it cannot tell an untouched page from one whose dialog was
+just closed — one press would have closed the dialog *and* left the task. The listener
+therefore runs in the capture phase, and stops the event only when it acts.
+
 ## 1.0.4
 
 ### Narrow screens
